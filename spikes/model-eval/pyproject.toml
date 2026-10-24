@@ -1,0 +1,16 @@
+[project]
+name = "model-eval"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "einops>=0.8.2",
+    "huggingface-hub>=2.3.0",
+    "numpy>=2.5.4",
+    "onnxruntime>=1.31.0",
+    "pillow>=13.0.0",
+    "pillow-heif>=1.8.1",
+    "sentence-transformers>=4",
+    "tokenizers>=0.22",
+    "torch>=2.14.1",
+    "transformers>=5",
+]

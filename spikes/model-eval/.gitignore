@@ -1,0 +1,4 @@
+.venv/
+models/
+# private photos and paths
+out/
