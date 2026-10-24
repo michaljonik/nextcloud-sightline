@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+  - SPDX-FileCopyrightText: 2026 Michal Jonik
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>sightline</id>
+	<name>Sightline</name>
+	<summary>Semantic photo search, computed locally</summary>
+	<description><![CDATA[Type "dog in the forest" into the search bar and get matching photos, ranked by meaning.
+Embeddings are computed by a separate local service (sightline-embed); nothing leaves your server.]]></description>
+	<version>0.0.1</version>
+	<licence>agpl</licence>
+	<author>Michal Jonik</author>
+	<namespace>Sightline</namespace>
+	<category>search</category>
+	<category>multimedia</category>
+	<bugs>https://github.com/michaljonik/nextcloud-sightline/issues</bugs>
+	<dependencies>
+		<nextcloud min-version="33" max-version="35"/>
+	</dependencies>
+	<background-jobs>
+		<job>OCA\Sightline\BackgroundJob\IndexJob</job>
+	</background-jobs>
+	<commands>
+		<command>OCA\Sightline\Command\Crawl</command>
+		<command>OCA\Sightline\Command\Index</command>
+		<command>OCA\Sightline\Command\Search</command>
+	</commands>
+</info>
