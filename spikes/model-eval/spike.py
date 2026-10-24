@@ -257,9 +257,9 @@ class TextEncoder:
         self.canonicalize = text_cfg.get("tokenizer_kwargs", {}).get("clean") == "canonicalize"
         self.tokenizer = Tokenizer.from_file(str(model_dir() / "textual" / "tokenizer.json"))
         pad = tok_cfg["pad_token"]
-        self.tokenizer.enable_padding(length=text_cfg["context_length"], pad_token=pad,
+        self.tokenizer.enable_padding(length=text_cfg.get("context_length", 77), pad_token=pad,
                                       pad_id=self.tokenizer.token_to_id(pad))
-        self.tokenizer.enable_truncation(max_length=text_cfg["context_length"])
+        self.tokenizer.enable_truncation(max_length=text_cfg.get("context_length", 77))
         self.session = session("textual", provider)
 
     def encode(self, text: str) -> np.ndarray:

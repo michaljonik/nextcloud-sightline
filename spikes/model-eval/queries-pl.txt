@@ -1,0 +1,31 @@
+# Polish versions of queries.txt, same order (line N here = line N there), so relevance
+# judgements carry over. Lines starting with # are skipped.
+mężczyzna biegnący z psem
+mglisty poranek
+jesienne liście
+puchar
+urządzenie zabezpieczające
+Boże Narodzenie
+akcesoria biurowe
+jazda na nartach
+silnik odrzutowy
+smutny
+rodzicielstwo
+szczęśliwe dziecko o niebieskich oczach
+mężczyzna na wyciągu narciarskim
+pies pracujący na laptopie
+szalone dziecko
+tekstura
+mała głębia ostrości
+chłopiec z niebieskim plecakiem
+tata uczący dzieci
+ośnieżone góry
+ulica miasta nocą
+ludzie na urodzinach z tortem
+dziecko jadące na rowerze
+jedzenie na talerzu
+zbliżenie kwiatu
+grupowe zdjęcie uśmiechniętych ludzi
+zrzut ekranu telefonu
+dokument lub paragon
+ktoś trzyma niemowlę
