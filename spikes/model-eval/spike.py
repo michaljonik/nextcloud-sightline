@@ -262,6 +262,8 @@ class TextEncoder:
             pad = tok_cfg["pad_token"]
             self.tokenizer.enable_padding(length=text_cfg.get("context_length", 77), pad_token=pad,
                                           pad_id=self.tokenizer.token_to_id(pad))
+        else:
+            self.tokenizer.no_padding()  # tokenizer.json may enable padding on its own
         self.tokenizer.enable_truncation(max_length=text_cfg.get("context_length", 77))
         self.session = session("textual", provider)
 
