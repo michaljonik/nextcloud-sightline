@@ -8,12 +8,9 @@ declare(strict_types=1);
 
 namespace OCA\Sightline\Service;
 
-use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\File;
 use OCP\Files\IRootFolder;
-use OCP\IDBConnection;
 use OCP\IPreview;
-use Psr\Log\LoggerInterface;
 
 /**
  * Drains the queue: preview from IPreview → sightline-embed → bookkeeping row.
@@ -22,21 +19,20 @@ class Indexer {
 	/** IPreview rounds sizes up to a power of 4; 1024 is one, 512 would become 1024 anyway. */
 	public const PREVIEW_SIZE = 1024;
 
-	private const STATUS_INDEXED = 1;
-	private const STATUS_FAILED = 2;
-
 	public function __construct(
 		private QueueService $queue,
 		private EmbedClient $embed,
+		private FileRepository $files,
+		private Reconciler $reconciler,
 		private IRootFolder $rootFolder,
 		private IPreview $preview,
-		private IDBConnection $db,
-		private LoggerInterface $logger,
 	) {
 	}
 
 	/**
 	 * Process queue entries until the queue is empty, $maxFiles are done or $seconds run out.
+	 * Throws EmbedException when the service is unreachable or misconfigured; the entry
+	 * stays queued.
 	 *
 	 * @param callable(array): void|null $onFile receives one stats row per processed file
 	 */
@@ -67,19 +63,22 @@ class Indexer {
 
 	private function index(int $fileId): array {
 		$node = $this->rootFolder->getFirstNodeById($fileId);
-		// Only photos under a user's files/ (not trash, versions or appdata).
+		// Only photos under a user's files/ (not trash, versions or appdata). A trashed photo
+		// loses its vector; restoring it encodes it again.
 		if (!$node instanceof File || !str_starts_with($node->getMimetype(), 'image/')
 			|| !preg_match('#^/[^/]+/files/#', $node->getPath())) {
 			return $this->delete($fileId) + ['result' => 'not indexable'];
 		}
 		$storageId = $node->getMountPoint()->getNumericStorageId();
-		$row = $this->row($fileId);
-		if ($row !== null && $row['etag'] === $node->getEtag() && (int)$row['status'] === self::STATUS_INDEXED) {
-			if ((int)$row['storage_id'] === $storageId) {
+		$row = $this->files->get($fileId);
+		if ($row !== null && $row['etag'] === $node->getEtag() && !$this->outdated($row)) {
+			if ($row['storage_id'] === $storageId) {
 				return ['result' => 'unchanged'];
 			}
-			$this->embed->move($fileId, $storageId);
-			$this->save($fileId, $storageId, $node->getEtag(), $row['model'], self::STATUS_INDEXED, null);
+			if ($row['status'] === FileRepository::STATUS_INDEXED) {
+				$this->embed->move($fileId, $storageId);
+			}
+			$this->files->save($fileId, $storageId, $row['etag'], $row['model'], $row['status'], $row['error']);
 			return ['result' => 'moved'];
 		}
 
@@ -90,20 +89,24 @@ class Indexer {
 			$image = $preview->getContent();
 			$mime = $preview->getMimeType();
 		} catch (\Throwable $e) {
-			$this->save($fileId, $storageId, $node->getEtag(), '', self::STATUS_FAILED, 'preview: ' . $e->getMessage());
-			return ['result' => 'no preview', 'source_mime' => $node->getMimetype(), 'error' => $e->getMessage()];
+			return $this->fail($fileId, $storageId, $node, 'preview: ' . $e->getMessage()) + ['result' => 'no preview'];
 		}
 		$t1 = microtime(true);
 		try {
 			$response = $this->embed->index($fileId, $storageId, $image, $mime);
-		} catch (\Throwable $e) {
-			// Service down or overloaded: leave it for the next run rather than marking failed.
-			$this->queue->enqueue($fileId, $storageId, QueueService::INDEX);
-			$this->logger->warning('sightline-embed index failed', ['exception' => $e]);
+		} catch (EmbedException $e) {
+			if ($e->isRejected()) {
+				return $this->fail($fileId, $storageId, $node, 'embed: ' . $e->getMessage()) + ['result' => 'rejected'];
+			}
+			// Service down or misconfigured: keep the entry and end this run.
 			throw $e;
 		}
 		$t2 = microtime(true);
-		$this->save($fileId, $storageId, $node->getEtag(), $response['model'], self::STATUS_INDEXED, null);
+		if ($this->embed->rememberModel($response['model'])) {
+			// The service switched models: queue everything indexed with the old one.
+			$this->reconciler->schedule();
+		}
+		$this->files->save($fileId, $storageId, $node->getEtag(), $response['model'], FileRepository::STATUS_INDEXED, null);
 		return [
 			'result' => 'indexed',
 			'source_mime' => $node->getMimetype(),
@@ -116,40 +119,27 @@ class Indexer {
 		];
 	}
 
+	/** Indexed with a model the service no longer uses. Failed rows wait for a new etag. */
+	private function outdated(array $row): bool {
+		$model = $this->embed->model();
+		return $row['status'] === FileRepository::STATUS_INDEXED && $model !== '' && $row['model'] !== $model;
+	}
+
+	private function fail(int $fileId, int $storageId, File $node, string $error): array {
+		// A failed file must not keep an old vector for content that changed.
+		if (($this->files->get($fileId)['status'] ?? null) === FileRepository::STATUS_INDEXED) {
+			$this->embed->delete($fileId);
+		}
+		$this->files->save($fileId, $storageId, $node->getEtag(), '', FileRepository::STATUS_FAILED, $error);
+		return ['source_mime' => $node->getMimetype(), 'error' => $error];
+	}
+
 	private function delete(int $fileId): array {
-		if ($this->row($fileId) === null) {
+		if ($this->files->get($fileId) === null) {
 			return ['result' => 'not indexed'];
 		}
 		$this->embed->delete($fileId);
-		$qb = $this->db->getQueryBuilder();
-		$qb->delete('sightline_files')
-			->where($qb->expr()->eq('file_id', $qb->createNamedParameter($fileId, IQueryBuilder::PARAM_INT)))
-			->executeStatement();
+		$this->files->delete($fileId);
 		return ['result' => 'deleted'];
-	}
-
-	private function row(int $fileId): ?array {
-		$qb = $this->db->getQueryBuilder();
-		$qb->select('*')->from('sightline_files')
-			->where($qb->expr()->eq('file_id', $qb->createNamedParameter($fileId, IQueryBuilder::PARAM_INT)));
-		$row = $qb->executeQuery()->fetch();
-		return $row === false ? null : $row;
-	}
-
-	private function save(int $fileId, int $storageId, string $etag, string $model, int $status, ?string $error): void {
-		$qb = $this->db->getQueryBuilder();
-		$qb->delete('sightline_files')
-			->where($qb->expr()->eq('file_id', $qb->createNamedParameter($fileId, IQueryBuilder::PARAM_INT)))
-			->executeStatement();
-		$qb = $this->db->getQueryBuilder();
-		$qb->insert('sightline_files')->values([
-			'file_id' => $qb->createNamedParameter($fileId, IQueryBuilder::PARAM_INT),
-			'storage_id' => $qb->createNamedParameter($storageId, IQueryBuilder::PARAM_INT),
-			'etag' => $qb->createNamedParameter($etag),
-			'model' => $qb->createNamedParameter($model),
-			'status' => $qb->createNamedParameter($status, IQueryBuilder::PARAM_INT),
-			'error' => $qb->createNamedParameter($error === null ? null : mb_substr($error, 0, 255)),
-			'indexed_at' => $qb->createNamedParameter(time(), IQueryBuilder::PARAM_INT),
-		])->executeStatement();
 	}
 }

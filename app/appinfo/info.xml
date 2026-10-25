@@ -10,7 +10,7 @@
 	<summary>Semantic photo search, computed locally</summary>
 	<description><![CDATA[Type "dog in the forest" into the search bar and get matching photos, ranked by meaning.
 Embeddings are computed by a separate local service (sightline-embed); nothing leaves your server.]]></description>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 	<licence>agpl</licence>
 	<author>Michal Jonik</author>
 	<namespace>Sightline</namespace>
@@ -22,10 +22,12 @@ Embeddings are computed by a separate local service (sightline-embed); nothing l
 	</dependencies>
 	<background-jobs>
 		<job>OCA\Sightline\BackgroundJob\IndexJob</job>
+		<job>OCA\Sightline\BackgroundJob\ReconcileJob</job>
 	</background-jobs>
 	<commands>
-		<command>OCA\Sightline\Command\Crawl</command>
 		<command>OCA\Sightline\Command\Index</command>
+		<command>OCA\Sightline\Command\Reconcile</command>
 		<command>OCA\Sightline\Command\Search</command>
+		<command>OCA\Sightline\Command\Status</command>
 	</commands>
 </info>

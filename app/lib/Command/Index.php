@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace OCA\Sightline\Command;
 
+use OCA\Sightline\Service\EmbedException;
 use OCA\Sightline\Service\Indexer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,18 +37,23 @@ class Index extends Command {
 		$rows = [];
 		$log = $input->getOption('jsonl') ? fopen($input->getOption('jsonl'), 'w') : null;
 		$t0 = microtime(true);
-		$this->indexer->run((int)$input->getOption('limit'), (float)$input->getOption('seconds'),
-			function (array $row) use (&$rows, $log, $output) {
-				$rows[] = $row;
-				if ($log) {
-					fwrite($log, json_encode($row) . "\n");
-				}
-				if ($output->isVerbose()) {
-					$output->writeln(json_encode($row));
-				} elseif (count($rows) % 25 === 0) {
-					$output->writeln(count($rows) . ' done');
-				}
-			});
+		$stopped = null;
+		try {
+			$this->indexer->run((int)$input->getOption('limit'), (float)$input->getOption('seconds'),
+				function (array $row) use (&$rows, $log, $output) {
+					$rows[] = $row;
+					if ($log) {
+						fwrite($log, json_encode($row) . "\n");
+					}
+					if ($output->isVerbose()) {
+						$output->writeln(json_encode($row));
+					} elseif (count($rows) % 25 === 0) {
+						$output->writeln(count($rows) . ' done');
+					}
+				});
+		} catch (EmbedException $e) {
+			$stopped = $e->getMessage();
+		}
 		$wall = microtime(true) - $t0;
 
 		$output->writeln(sprintf('%d files in %.1f s (%.2f files/s)', count($rows), $wall, count($rows) / max($wall, 1e-9)));
@@ -71,6 +77,10 @@ class Index extends Command {
 		}
 		foreach (array_filter($rows, fn ($r) => isset($r['error'])) as $r) {
 			$output->writeln(sprintf('  failed %d (%s): %s', $r['file_id'], $r['source_mime'] ?? '?', $r['error']));
+		}
+		if ($stopped !== null) {
+			$output->writeln("<error>stopped, queue kept: $stopped</error>");
+			return 1;
 		}
 		return 0;
 	}

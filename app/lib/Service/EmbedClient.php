@@ -20,6 +20,7 @@ use OCP\IAppConfig;
 class EmbedClient {
 	private const TIMEOUT = 30;
 	private const SEARCH_TIMEOUT = 5;
+	private const HEALTH_TIMEOUT = 3;
 
 	private IClient $client;
 
@@ -32,20 +33,19 @@ class EmbedClient {
 
 	/** @return array{fileid: int, model: string, encode_ms: float} */
 	public function index(int $fileId, int $storageId, string $image, string $mimeType): array {
-		$response = $this->client->put($this->url('/files/' . $fileId), $this->options([
+		return $this->request('PUT', '/files/' . $fileId, [
 			'query' => ['storage_id' => $storageId],
 			'body' => $image,
 			'headers' => ['Content-Type' => $mimeType],
-		]));
-		return json_decode((string)$response->getBody(), true, flags: JSON_THROW_ON_ERROR);
+		]);
 	}
 
 	public function move(int $fileId, int $storageId): void {
-		$this->client->patch($this->url('/files/' . $fileId), $this->options(['json' => ['storage_id' => $storageId]]));
+		$this->request('PATCH', '/files/' . $fileId, ['json' => ['storage_id' => $storageId]]);
 	}
 
 	public function delete(int $fileId): void {
-		$this->client->delete($this->url('/files/' . $fileId), $this->options([]));
+		$this->request('DELETE', '/files/' . $fileId, []);
 	}
 
 	/**
@@ -53,10 +53,42 @@ class EmbedClient {
 	 * @return array{model: string, results: list<array{fileid: int, score: float}>, exhausted: bool, timing_ms: array}
 	 */
 	public function search(string $query, array $storageIds, int $offset, int $limit): array {
-		$response = $this->client->post($this->url('/search'), $this->options([
+		return $this->request('POST', '/search', [
 			'json' => ['query' => $query, 'storage_ids' => $storageIds, 'offset' => $offset, 'limit' => $limit],
 			'timeout' => self::SEARCH_TIMEOUT,
-		]));
+		]);
+	}
+
+	/** @return array{model: string, dims: int, count: int} */
+	public function health(): array {
+		return $this->request('GET', '/health', ['timeout' => self::HEALTH_TIMEOUT]);
+	}
+
+	/**
+	 * The model the service reported last; empty until it has been reached once. Rows
+	 * indexed with another model are outdated.
+	 */
+	public function model(): string {
+		return $this->appConfig->getValueString(Application::APP_ID, 'service_model');
+	}
+
+	/** @return bool whether the model changed; the caller then schedules a reconciliation */
+	public function rememberModel(string $model): bool {
+		if ($model === $this->model()) {
+			return false;
+		}
+		$this->appConfig->setValueString(Application::APP_ID, 'service_model', $model);
+		return true;
+	}
+
+	private function request(string $method, string $path, array $options): array {
+		try {
+			$response = $this->client->request($method, $this->url($path), $this->options($options));
+		} catch (\Exception $e) {
+			// Guzzle's request exceptions carry the HTTP status as their code, 0 if unreachable.
+			$code = $e->getCode() >= 400 && $e->getCode() < 600 ? $e->getCode() : 0;
+			throw new EmbedException("sightline-embed $method $path failed: " . $e->getMessage(), $code, $e);
+		}
 		return json_decode((string)$response->getBody(), true, flags: JSON_THROW_ON_ERROR);
 	}
 

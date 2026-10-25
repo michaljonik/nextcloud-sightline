@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace OCA\Sightline\Listener;
 
 use OCA\Sightline\AppInfo\Application;
+use OCA\Sightline\Service\PhotoFilter;
 use OCA\Sightline\Service\QueueService;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
@@ -31,12 +32,6 @@ use Psr\Log\LoggerInterface;
  * @template-implements IEventListener<Event>
  */
 class FileEventListener implements IEventListener {
-	// Storage-relative paths that never hold user photos.
-	private const SKIP_PREFIXES = ['files_trashbin/', 'files_versions/', 'appdata_', 'cache/', 'uploads/', 'thumbnails/'];
-	// Cache events carry no mimetype, and every folder above a changed file gets one too.
-	// Nextcloud derives image mimetypes from the extension, so filter on that.
-	private const IMAGE_EXTENSIONS = '/\.(jpe?g|png|webp|avif|gif|bmp|tiff?|heic|heif|dng|nef|cr2|cr3|arw|orf|rw2|raf)$/i';
-
 	public function __construct(
 		private QueueService $queue,
 		private IAppConfig $appConfig,
@@ -50,7 +45,7 @@ class FileEventListener implements IEventListener {
 		}
 
 		if ($event instanceof ICacheEvent) {
-			if ($this->skipPath($event->getPath()) || !preg_match(self::IMAGE_EXTENSIONS, $event->getPath())) {
+			if (!PhotoFilter::isIndexablePath($event->getPath()) || !PhotoFilter::hasPhotoExtension($event->getPath())) {
 				return;
 			}
 			$action = $event instanceof CacheEntryRemovedEvent ? QueueService::DELETE : QueueService::INDEX;
@@ -72,15 +67,6 @@ class FileEventListener implements IEventListener {
 		} catch (NotFoundException) {
 			// A deleted node may no longer resolve; its CacheEntryRemovedEvent covers it.
 		}
-	}
-
-	private function skipPath(string $path): bool {
-		foreach (self::SKIP_PREFIXES as $prefix) {
-			if (str_starts_with($path, $prefix)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private function logEvent(Event $event): void {
