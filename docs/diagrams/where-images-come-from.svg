@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="1000" height="520" role="img" aria-label="Where Sightline's images come from. Sightline asks Nextcloud's preview system for a 1024 px image. Nextcloud first makes a max-size preview from the original, which it keeps and also uses for thumbnails, then downscales it. JPEG, PNG, WebP and GIF work out of the box, HEIC needs Imagick or Imaginary, and RAW files have no preview provider in Nextcloud core yet.">
+  <title>Where the images come from</title>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: #1f2328; }
+    .bg { fill: #ffffff; }
+    .m { fill: #59636e; }
+    .b { font-weight: 600; }
+    .step { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; fill: #59636e; }
+    .box { fill: #ffffff; stroke: #d1d9e0; stroke-width: 1.5; }
+    .nc { fill: #eef6fc; stroke: #b6dcf3; stroke-width: 1.5; }
+    .svc { fill: #f6f2ff; stroke: #d6c6f7; stroke-width: 1.5; }
+    .svch { fill: #6f42c1; }
+    .no { fill: #ffffff; stroke: #cf222e; stroke-width: 1.5; stroke-dasharray: 4 3; }
+    .okl { stroke: #1a7f37; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .nol { stroke: #cf222e; stroke-width: 2.4; fill: none; stroke-linecap: round; }
+    .ln { stroke: #6e7781; stroke-width: 1.8; fill: none; }
+    .dash { stroke: #6e7781; stroke-width: 1.8; fill: none; stroke-dasharray: 5 4; }
+    .ah { fill: #6e7781; }
+    .bar { fill: #0a6fa8; }
+    .track { fill: #eaeef2; }
+    .halo { stroke: #ffffff; stroke-width: 6; stroke-linejoin: round; paint-order: stroke; }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #e6edf3; }
+      .bg { fill: #0d1117; }
+      .m, .step { fill: #9198a1; }
+      .box { fill: #161b22; stroke: #3d444d; }
+      .nc { fill: #0b2233; stroke: #1f5b80; }
+      .svc { fill: #1f1733; stroke: #5a3f99; }
+      .svch { fill: #b392f0; }
+      .no { fill: #0d1117; stroke: #f85149; }
+      .okl { stroke: #3fb950; }
+      .nol { stroke: #f85149; }
+      .ln, .dash { stroke: #8b949e; }
+      .ah { fill: #8b949e; }
+      .bar { fill: #58b5ea; }
+      .track { fill: #21262d; }
+      .halo { stroke: #0d1117; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1000" height="520" rx="14"/>
+
+  <text class="b" x="30" y="48" font-size="20">Where the images come from</text>
+  <text class="m" x="30" y="71" font-size="14">Sightline never opens original files. It asks Nextcloud’s preview system for a 1024 px image.</text>
+
+  <!-- Step 1: the original -->
+  <text class="step" x="30" y="112">1 · ORIGINAL FILE</text>
+
+  <rect class="box" x="30" y="128" width="220" height="70" rx="8"/>
+  <text class="b" x="46" y="154" font-size="14.5">JPEG, PNG, WebP, GIF</text>
+  <text class="m" x="46" y="176" font-size="12.5">built into Nextcloud</text>
+  <polyline class="okl" points="222,147 228,153 238,141"/>
+
+  <rect class="box" x="30" y="212" width="220" height="70" rx="8"/>
+  <text class="b" x="46" y="238" font-size="14.5">HEIC, HEIF</text>
+  <text class="m" x="46" y="258" font-size="12.5">needs Imagick with HEIC</text>
+  <text class="m" x="46" y="273" font-size="12.5">support, or Imaginary</text>
+
+  <rect class="no" x="30" y="296" width="220" height="70" rx="8"/>
+  <text class="b" x="46" y="322" font-size="14.5">RAW: NEF, DNG, ARW…</text>
+  <text class="m" x="46" y="342" font-size="12.5">no preview provider in</text>
+  <text class="m" x="46" y="357" font-size="12.5">Nextcloud core: not indexed yet</text>
+  <line class="nol" x1="226" y1="306" x2="236" y2="316"/><line class="nol" x1="236" y1="306" x2="226" y2="316"/>
+
+  <text class="m" x="30" y="396" font-size="12.5">Local disk, external storage and</text>
+  <text class="m" x="30" y="413" font-size="12.5">server-side encryption all take this</text>
+  <text class="m" x="30" y="430" font-size="12.5">path. An external original is fetched</text>
+  <text class="m" x="30" y="447" font-size="12.5">to a temporary file the first time.</text>
+
+  <!-- Step 2: Nextcloud previews -->
+  <text class="step" x="350" y="112">2 · NEXTCLOUD PREVIEWS</text>
+  <rect class="nc" x="350" y="128" width="330" height="238" rx="10"/>
+
+  <!-- arrows into the preview system -->
+  <line class="ln" x1="250" y1="163" x2="368" y2="176" marker-end="url(#arrow)"/>
+  <line class="ln" x1="250" y1="247" x2="368" y2="198" marker-end="url(#arrow)"/>
+  <text class="b" x="300" y="198" font-size="12.5" text-anchor="middle">only if</text>
+  <text class="b" x="300" y="213" font-size="12.5" text-anchor="middle">missing</text>
+  <line class="dash" x1="250" y1="331" x2="368" y2="216" marker-end="url(#arrow)"/>
+  <text class="m halo" x="300" y="314" font-size="12.5" text-anchor="middle">candidate:</text>
+  <text class="m halo" x="300" y="329" font-size="12.5" text-anchor="middle">the JPEG</text>
+  <text class="m halo" x="300" y="344" font-size="12.5" text-anchor="middle">inside a RAW</text>
+
+
+  <rect class="box" x="370" y="144" width="290" height="84" rx="8"/>
+  <text class="b" x="386" y="170" font-size="14.5">Max-size preview</text>
+  <text class="m" x="386" y="191" font-size="12.5">4096 px by default, kept on disk</text>
+  <text class="m" x="386" y="208" font-size="12.5">also behind thumbnails in Files and Photos</text>
+
+  <line class="ln" x1="515" y1="228" x2="515" y2="278" marker-end="url(#arrow)"/>
+  <text class="b" x="527" y="257" font-size="12.5">downscale</text>
+
+  <rect class="box" x="370" y="280" width="290" height="70" rx="8"/>
+  <text class="b" x="386" y="306" font-size="14.5">1024 px copy for Sightline</text>
+  <text class="m" x="386" y="327" font-size="12.5">JPEG, WebP or AVIF, not stored</text>
+
+  <!-- Step 3: the service -->
+  <rect class="box" x="760" y="128" width="210" height="122" rx="8"/>
+  <text class="b" x="776" y="151" font-size="14">Time per preview</text>
+  <text class="m" x="776" y="169" font-size="12">M4 · max 2048 px · p50</text>
+  <text x="776" y="193" font-size="12.5">max preview missing</text>
+  <text class="b" x="954" y="193" font-size="12.5" text-anchor="end">306 ms</text>
+  <rect class="track" x="776" y="199" width="178" height="9" rx="4.5"/>
+  <rect class="bar" x="776" y="199" width="178" height="9" rx="4.5"/>
+  <text x="776" y="225" font-size="12.5">max preview exists</text>
+  <text class="b" x="954" y="225" font-size="12.5" text-anchor="end">38 ms</text>
+  <rect class="track" x="776" y="231" width="178" height="9" rx="4.5"/>
+  <rect class="bar" x="776" y="231" width="22" height="9" rx="4.5"/>
+
+  <text class="step" x="760" y="272">3 · SIGHTLINE-EMBED</text>
+  <line class="ln" x1="660" y1="315" x2="758" y2="315" marker-end="url(#arrow)"/>
+  <text class="b" x="710" y="290" font-size="12.5" text-anchor="middle">image</text>
+  <text class="b" x="710" y="305" font-size="12.5" text-anchor="middle">+ file ID</text>
+
+  <rect class="svc" x="760" y="280" width="210" height="70" rx="8"/>
+  <text class="svch b" x="776" y="306" font-size="14.5">Image encoder</text>
+  <text class="m" x="776" y="326" font-size="12.5">scales the image down to</text>
+  <text class="m" x="776" y="341" font-size="12.5">the model’s input size</text>
+
+  <!-- footer -->
+  <line x1="30" y1="470" x2="970" y2="470" class="ln" stroke-width="1" opacity="0.35"/>
+  <text x="500" y="497" font-size="14" text-anchor="middle"><tspan class="m">A library that already shows thumbnails in Nextcloud </tspan><tspan class="b">skips the expensive step.</tspan></text>
+</svg>

@@ -73,6 +73,8 @@ Nextcloud runs background jobs in AJAX or webcron mode). For each file it:
    own maximum-size preview is stored, not an extra 1024 px copy;
 4. sends the image to the service and records the etag and the model ID.
 
+![Sightline asks Nextcloud's preview system for a 1024 px image; Nextcloud makes and keeps a max-size preview first, so photos that already have thumbnails are cheap to index](diagrams/where-images-come-from.svg)
+
 Images come from `IPreview` because it works the same for local storage, external storage
 and server-side encryption, and because the service must not read files. Preview generation
 dominates the cost of a first index when no previews exist yet (see
