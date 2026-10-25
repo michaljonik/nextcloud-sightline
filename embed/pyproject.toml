@@ -12,6 +12,13 @@ dependencies = [
     "pillow-heif>=1.1",
     "tokenizers>=0.22",
     "sqlite-vec==0.1.9",
+    "huggingface-hub>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4",
+    "httpx>=0.28",
 ]
 
 [project.scripts]
@@ -20,3 +27,7 @@ sightline-embed = "sightline_embed.app:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]

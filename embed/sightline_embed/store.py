@@ -45,12 +45,22 @@ class VectorStore:
             return cur.rowcount > 0
 
     def delete(self, fileid: int) -> bool:
+        """Delete from every model's table: a deleted photo must not linger in an old model's
+        vectors (embeddings are personal data)."""
         with self._lock, self._db:
-            return self._db.execute(f"DELETE FROM {self.table} WHERE fileid = ?", (fileid,)).rowcount > 0
+            deleted = False
+            for table in self._tables():
+                deleted |= self._db.execute(f"DELETE FROM {table} WHERE fileid = ?", (fileid,)).rowcount > 0
+            return deleted
 
     def count(self) -> int:
         with self._lock:
             return self._db.execute(f"SELECT count(*) FROM {self.table}").fetchone()[0]
+
+    def _tables(self) -> list[str]:
+        rows = self._db.execute("SELECT name FROM sqlite_master WHERE type = 'table' "
+                                "AND sql LIKE 'CREATE VIRTUAL TABLE%USING vec0(%'").fetchall()
+        return [name for (name,) in rows]
 
     def search(self, vector: np.ndarray, storage_ids: list[int], k: int) -> list[tuple[int, float]]:
         """Top-k (fileid, similarity) within the given storages, best first."""

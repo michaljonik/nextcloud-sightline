@@ -43,7 +43,7 @@ def _run(sess: ort.InferenceSession, feed: dict) -> np.ndarray:
     return v / np.linalg.norm(v)
 
 
-class Encoder:
+class OnnxEncoder:
     def __init__(self, model_dir: Path, threads: int = 0):
         self.model_id = model_dir.name
         config = json.loads((model_dir / "config.json").read_text())
