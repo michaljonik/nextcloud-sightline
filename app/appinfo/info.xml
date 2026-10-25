@@ -30,4 +30,8 @@ Embeddings are computed by a separate local service (sightline-embed); nothing l
 		<command>OCA\Sightline\Command\Search</command>
 		<command>OCA\Sightline\Command\Status</command>
 	</commands>
+	<settings>
+		<admin>OCA\Sightline\Settings\Admin</admin>
+		<admin-section>OCA\Sightline\Settings\AdminSection</admin-section>
+	</settings>
 </info>

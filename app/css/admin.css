@@ -1,0 +1,37 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Michal Jonik
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+#sightline-admin label {
+	display: inline-block;
+	min-width: 120px;
+}
+
+#sightline-admin input[type="url"],
+#sightline-admin input[type="password"] {
+	width: 320px;
+	max-width: 100%;
+}
+
+#sightline-admin .sightline-status th {
+	padding: 4px 24px 4px 0;
+	color: var(--color-text-maxcontrast);
+	font-weight: normal;
+	text-align: start;
+}
+
+#sightline-admin .sightline-status td {
+	padding: 4px 0;
+	overflow-wrap: anywhere;
+	font-variant-numeric: tabular-nums;
+}
+
+#sightline-admin .sightline-msg {
+	margin-inline-start: 8px;
+	color: var(--color-text-maxcontrast);
+}
+
+#sightline-admin .sightline-msg.error,
+#sightline-admin td.error {
+	color: var(--color-error-text);
+}
