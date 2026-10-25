@@ -252,13 +252,16 @@ class TextEncoder:
 
     def __init__(self, provider: str):
         config = json.loads((model_dir() / "config.json").read_text())
-        tok_cfg = json.loads((model_dir() / "textual" / "tokenizer_config.json").read_text())
         text_cfg = config["text_cfg"]
         self.canonicalize = text_cfg.get("tokenizer_kwargs", {}).get("clean") == "canonicalize"
+        # Instruction-tuned text towers (jina-clip-v2) expect a task prefix on queries.
+        self.prefix = text_cfg.get("prefix", "")
         self.tokenizer = Tokenizer.from_file(str(model_dir() / "textual" / "tokenizer.json"))
-        pad = tok_cfg["pad_token"]
-        self.tokenizer.enable_padding(length=text_cfg.get("context_length", 77), pad_token=pad,
-                                      pad_id=self.tokenizer.token_to_id(pad))
+        if text_cfg.get("pad", True):
+            tok_cfg = json.loads((model_dir() / "textual" / "tokenizer_config.json").read_text())
+            pad = tok_cfg["pad_token"]
+            self.tokenizer.enable_padding(length=text_cfg.get("context_length", 77), pad_token=pad,
+                                          pad_id=self.tokenizer.token_to_id(pad))
         self.tokenizer.enable_truncation(max_length=text_cfg.get("context_length", 77))
         self.session = session("textual", provider)
 
@@ -266,7 +269,7 @@ class TextEncoder:
         text = " ".join(text.split())
         if self.canonicalize:
             text = text.translate(str.maketrans("", "", string.punctuation)).lower()
-        enc = self.tokenizer.encode(text)
+        enc = self.tokenizer.encode(self.prefix + text)
         feed = {}
         for inp in self.session.get_inputs():
             dtype = np.int64 if "int64" in inp.type else np.int32
