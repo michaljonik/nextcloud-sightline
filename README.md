@@ -26,8 +26,9 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
 - Nextcloud 33 to 35, with system cron for background jobs.
 - Previews enabled for the formats you want indexed. HEIC needs Imagick with HEIC support or
   Imaginary. RAW files are not indexed yet.
-- A machine on the same network for `sightline-embed`: Docker or Python 3.12. With SigLIP 2
-  B/16 the service used about 0.9 GB of memory after indexing 300 photos (MacBook Air M4).
+- A machine on the same network for `sightline-embed`: Docker or Python 3.12. With the
+  default XLM-R B/32 model on an Intel N305, measured separately, indexing peaked at 1.1 GB
+  of memory and the query side (text encoder only) at 2.2 GB.
 
 ## Install
 
@@ -83,7 +84,16 @@ their owner.
 
 - [Recognize](https://github.com/nextcloud/recognize) recognizes faces and tags objects and
   landscapes in photos.
-- [Memories](https://github.com/pulsejet/memories) is a photo gallery for Nextcloud.
+- [Memories](https://github.com/pulsejet/memories) is a photo gallery for Nextcloud. Since
+  v10.0 (October 2026) it ships code for Lens, an optional natural-language search service;
+  as of v10.2 it is off by default, undocumented, and its service is built from the Git
+  repository. Lens searches the folders of a user's Memories timeline from the Memories
+  search bar and fetches original files through a Nextcloud service account.
+  Sightline searches every photo a user can open, from the Nextcloud search bar; its service
+  receives preview images and holds no Nextcloud credentials.
+- [Immich](https://immich.app) is a self-hosted photo library with its own smart search.
+  Nextcloud files reach it only as an external library, which belongs to a single Immich
+  user and is indexed by path.
 - [Context Chat](https://github.com/nextcloud/context_chat) answers questions about
   documents; using CLIP for images is under discussion there
   ([issue #233](https://github.com/nextcloud/context_chat/issues/233)).
