@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: Nextcloud app (PHP ${{ matrix.php }})
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        php: ["8.2", "8.5"]
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - run: composer lint
+      - run: composer test
+
+  embed:
+    name: sightline-embed
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: embed
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: uv run pytest
+      - run: docker build -t sightline-embed:ci .

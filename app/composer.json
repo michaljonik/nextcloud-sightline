@@ -1,0 +1,35 @@
+{
+	"name": "michaljonik/sightline",
+	"description": "Semantic photo search for Nextcloud",
+	"license": "AGPL-3.0-or-later",
+	"type": "project",
+	"require": {
+		"php": ">=8.2"
+	},
+	"require-dev": {
+		"nextcloud/ocp": "dev-stable33",
+		"phpunit/phpunit": "^11.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"OCA\\Sightline\\": "lib/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"OCA\\Sightline\\Tests\\": "tests/",
+			"OCP\\": "vendor/nextcloud/ocp/OCP/",
+			"NCU\\": "vendor/nextcloud/ocp/NCU/"
+		}
+	},
+	"config": {
+		"platform": {
+			"php": "8.2"
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
+		"test": "phpunit"
+	}
+}
