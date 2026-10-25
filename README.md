@@ -63,12 +63,12 @@ Polish:
 
 | Model | Licence | Vector size | Notes |
 |---|---|---|---|
-| `immich-app/XLM-Roberta-Base-ViT-B-32__laion5b_s13b_b90k` | MIT | 512 | best or equal best in our English and Polish test, about a third of B/16's image cost |
-| `immich-app/ViT-B-16-SigLIP2__webli` | Apache-2.0 | 768 | |
+| `immich-app/XLM-Roberta-Base-ViT-B-32__laion5b_s13b_b90k` | MIT | 512 | recommended; best for Polish queries, 50 ms per photo on an Intel N305 (8 threads) |
+| `immich-app/ViT-B-16-SigLIP2__webli` | Apache-2.0 | 768 | slightly better for English on family photos, 3.75× the encoding cost |
 
-Measurements so far are from a MacBook Air M4 on 678 stock photos:
-[docs/measurements](docs/measurements/). The default will be chosen after measurements on
-the target hardware, an Intel N305 home server.
+Measurements are in [docs/measurements](docs/measurements/): 678 stock photos on a MacBook
+Air M4, and 400 photos from a family library on an Intel N305 home server, judged blind by
+their owner.
 
 ## Commands
 
