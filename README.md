@@ -5,8 +5,14 @@ Nextcloud search bar and get matching photos, ranked by what they show. Everythi
 computed on your own server: no cloud service, and no second photo library next to
 Nextcloud.
 
-Status: early. It works end to end in a development setup on Nextcloud 33; it is not in the
-Nextcloud app store yet.
+![Six of the first ten results for "dog on a beach" in a family photo library](docs/screenshots/dog-on-a-beach.jpg)
+
+Results appear in a "Photos by content" section of the Nextcloud search:
+
+![The Nextcloud search panel with the query "dog on a beach" and a "Photos by content" list of matching photos](docs/screenshots/unified-search.png)
+
+Status: early. It runs on Nextcloud 35 on a home server with a family photo library; it is
+not in the Nextcloud app store yet.
 
 ## How it works
 
