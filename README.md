@@ -10,6 +10,8 @@ Nextcloud app store yet.
 
 ## How it works
 
+![Photos and search text are mapped into one space; the photos nearest to the query are the results](docs/diagrams/one-space.svg)
+
 Sightline is two components:
 
 - `app/`: a Nextcloud app (`sightline`) that watches file changes, sends preview images to
@@ -17,9 +19,13 @@ Sightline is two components:
 - `embed/`: `sightline-embed`, a small Python service that turns images and search text into
   vectors with a CLIP-family model (ONNX Runtime, CPU) and stores them in SQLite.
 
+![Nextcloud sends preview images to sightline-embed for indexing, sends search text for queries, and checks every returned file ID against the user's permissions](docs/diagrams/how-it-works.svg)
+
 The service knows only file IDs and vectors. Nextcloud checks every search result against
 the searching user's own permissions before showing it, so a user only ever sees photos they
 can already open. [docs/architecture.md](docs/architecture.md) explains the design.
+
+![The service ranks candidates from every storage mounted for the user; Nextcloud drops the ones the user cannot open](docs/diagrams/who-sees-what.svg)
 
 ## Requirements
 

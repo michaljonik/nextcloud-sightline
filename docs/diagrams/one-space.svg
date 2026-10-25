@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" width="1000" height="480" role="img" aria-label="Photos and search text are placed in one shared space. Similar photos sit close together; the query 'dog in the forest' and its Polish version 'pies w lesie' land in the same spot, and the nearest photos are the results.">
+  <title>Photos and words in one space</title>
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: #1f2328; }
+    .bg { fill: #ffffff; }
+    .m { fill: #59636e; }
+    .b { font-weight: 600; }
+    .panel { fill: #f6f8fa; stroke: #d1d9e0; stroke-width: 1.5; }
+    .card { fill: #ffffff; stroke: #d1d9e0; stroke-width: 1.5; }
+    .hit { fill: #ffffff; stroke: #bc4c00; stroke-width: 2.5; }
+    .ph { fill: #dbe4ec; }
+    .phl { fill: none; stroke: #8c9aa8; stroke-width: 1.5; stroke-linejoin: round; }
+    .q { fill: #bc4c00; }
+    .qt { fill: #bc4c00; }
+    .qpill { fill: #fff4ec; stroke: #bc4c00; stroke-width: 1.5; }
+    .qln { stroke: #bc4c00; stroke-width: 1.8; fill: none; }
+    .qdash { stroke: #bc4c00; stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+    .badge { fill: #bc4c00; }
+    .badget { fill: #ffffff; font-weight: 700; }
+    .num { fill: #ffffff; stroke: #6e7781; stroke-width: 1.5; }
+    .numt { fill: #1f2328; font-weight: 700; }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #e6edf3; }
+      .bg { fill: #0d1117; }
+      .m { fill: #9198a1; }
+      .panel { fill: #151b23; stroke: #3d444d; }
+      .card { fill: #0d1117; stroke: #3d444d; }
+      .hit { fill: #0d1117; stroke: #f0883e; }
+      .ph { fill: #262c36; }
+      .phl { stroke: #6e7681; }
+      .q, .qt, .badge { fill: #f0883e; }
+      .qpill { fill: #2b1a0e; stroke: #f0883e; }
+      .qln, .qdash { stroke: #f0883e; }
+      .badget { fill: #0d1117; }
+      .num { fill: #0d1117; stroke: #8b949e; }
+      .numt { fill: #e6edf3; }
+    }
+  </style>
+  <defs>
+    <!-- a photo card: thumbnail glyph at the left, caption to the right -->
+    <g id="thumb">
+      <rect class="ph" x="0" y="0" width="22" height="16" rx="2"/>
+      <polyline class="phl" points="2,14 8,7 12,11 15,8 20,14"/>
+      <circle cx="16" cy="4.5" r="2" class="phl"/>
+    </g>
+    <marker id="qarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path class="q" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1000" height="480" rx="14"/>
+  <rect class="panel" x="20" y="20" width="620" height="440" rx="12"/>
+  <text class="b" x="40" y="54" font-size="19">Photos and words in one space</text>
+  <text class="m" x="40" y="76" font-size="13.5">schematic: the real space has 512 dimensions, not 2</text>
+
+  <!-- lines from the query point to its nearest photos -->
+  <line class="qdash" x1="230" y1="235" x2="290" y2="190"/>
+  <line class="qdash" x1="230" y1="235" x2="160" y2="160"/>
+  <line class="qdash" x1="230" y1="235" x2="315" y2="305"/>
+
+  <!-- photo cards (x, y = top-left, 124 x 30) -->
+  <g font-size="13">
+    <rect class="card" x="48" y="92" width="124" height="30" rx="6"/><use href="#thumb" x="56" y="99"/><text x="86" y="112">mushrooms</text>
+    <rect class="hit" x="78" y="135" width="124" height="30" rx="6"/><use href="#thumb" x="86" y="142"/><text x="116" y="155">forest path</text>
+    <rect class="hit" x="238" y="165" width="124" height="30" rx="6"/><use href="#thumb" x="246" y="172"/><text x="276" y="185">dog in woods</text>
+    <rect class="hit" x="268" y="305" width="124" height="30" rx="6"/><use href="#thumb" x="276" y="312"/><text x="306" y="325">puppy</text>
+    <rect class="card" x="388" y="255" width="124" height="30" rx="6"/><use href="#thumb" x="396" y="262"/><text x="426" y="275">dog on sofa</text>
+    <rect class="card" x="478" y="125" width="124" height="30" rx="6"/><use href="#thumb" x="486" y="132"/><text x="516" y="145">beach</text>
+    <rect class="card" x="498" y="180" width="124" height="30" rx="6"/><use href="#thumb" x="506" y="187"/><text x="536" y="200">sunset</text>
+    <rect class="card" x="468" y="325" width="124" height="30" rx="6"/><use href="#thumb" x="476" y="332"/><text x="506" y="345">dog on beach</text>
+    <rect class="card" x="58" y="395" width="124" height="30" rx="6"/><use href="#thumb" x="66" y="402"/><text x="96" y="415">birthday cake</text>
+    <rect class="card" x="228" y="405" width="124" height="30" rx="6"/><use href="#thumb" x="236" y="412"/><text x="266" y="425">kids’ party</text>
+  </g>
+
+  <!-- rank badges on the nearest photos -->
+  <circle class="badge" cx="362" cy="165" r="10"/><text class="badget" x="362" y="169.5" font-size="12" text-anchor="middle">1</text>
+  <circle class="badge" cx="202" cy="135" r="10"/><text class="badget" x="202" y="139.5" font-size="12" text-anchor="middle">2</text>
+  <circle class="badge" cx="392" cy="305" r="10"/><text class="badget" x="392" y="309.5" font-size="12" text-anchor="middle">3</text>
+
+  <!-- the two queries land on one point -->
+  <rect class="qpill" x="40" y="252" width="146" height="28" rx="14"/>
+  <text class="qt b" x="113" y="271" font-size="13.5" text-anchor="middle">dog in the forest</text>
+  <rect class="qpill" x="40" y="292" width="146" height="28" rx="14"/>
+  <text class="qt b" x="113" y="311" font-size="13.5" text-anchor="middle">pies w lesie</text>
+  <path class="qln" d="M186,266 Q205,262 220,243" marker-end="url(#qarrow)"/>
+  <path class="qln" d="M186,306 Q215,300 225,247" marker-end="url(#qarrow)"/>
+  <circle class="q" cx="230" cy="235" r="7"/>
+
+  <!-- explanation -->
+  <g font-size="13.5">
+    <circle class="num" cx="684" cy="115" r="13"/><text class="numt" x="684" y="120" font-size="13" text-anchor="middle">1</text>
+    <text class="b" x="708" y="120" font-size="15.5">Every photo becomes a point</text>
+    <text class="m" x="708" y="143">The image encoder places photos</text>
+    <text class="m" x="708" y="162">with similar content close together.</text>
+
+    <circle class="num" cx="684" cy="215" r="13"/><text class="numt" x="684" y="220" font-size="13" text-anchor="middle">2</text>
+    <text class="b" x="708" y="220" font-size="15.5">So does the search text</text>
+    <text class="m" x="708" y="243">The text encoder maps a query into</text>
+    <text class="m" x="708" y="262">the same space, in any language.</text>
+
+    <circle class="num" cx="684" cy="315" r="13"/><text class="numt" x="684" y="320" font-size="13" text-anchor="middle">3</text>
+    <text class="b" x="708" y="320" font-size="15.5">Results are the nearest photos</text>
+    <text class="m" x="708" y="343">No tags, captions or file names</text>
+    <text class="m" x="708" y="362">are involved.</text>
+  </g>
+</svg>
