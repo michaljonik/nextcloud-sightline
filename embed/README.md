@@ -11,14 +11,15 @@ Embeddings are personal data. Run the service on the internal network only.
 
 ```sh
 docker build -t sightline-embed .
-docker run -d --name sightline-embed -p 8765:8765 -v sightline-embed:/data \
+docker run -d --name sightline-embed -p 10.0.0.5:8765:8765 -v sightline-embed:/data \
   -e SIGHTLINE_TOKEN=... \
   -e SIGHTLINE_MODEL=immich-app/XLM-Roberta-Base-ViT-B-32__laion5b_s13b_b90k \
   sightline-embed
 ```
 
-On first start the model's ONNX files are downloaded into `/data/models`; vectors are stored
-in `/data/sightline.db`. The container runs as an unprivileged user.
+Replace `10.0.0.5` with the server's address on your internal network. On first start the
+model's ONNX files are downloaded into `/data/models`; vectors are stored in
+`/data/sightline.db`. The container runs as an unprivileged user.
 
 ## Run from source (development)
 

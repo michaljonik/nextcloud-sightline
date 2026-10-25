@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Image and text encoders for an Immich-style ONNX export.
 
 Layout (as published under huggingface.co/immich-app):

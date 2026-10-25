@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Compare search methods side by side on the same photos and queries.
 
 Methods are image-text models indexed with `spike.py --model NAME index ...`, plus optionally

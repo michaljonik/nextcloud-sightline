@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Finding the model export: a local folder, or a Hugging Face repo downloaded once.
 
 Immich publishes CLIP-family models in the layout encoder.py reads, under

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Lay out a Hugging Face (transformers.js-style) SigLIP ONNX export like an Immich export.
 
 onnx-community repos ship onnx/vision_model.onnx + onnx/text_model.onnx with HF configs;

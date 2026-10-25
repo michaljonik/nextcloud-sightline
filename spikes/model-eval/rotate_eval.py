@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Effect of a decoder that ignores EXIF orientation: embed portrait photos sideways and re-score.
 
 Every portrait photo in the judged set is embedded as a phone stores it with Orientation 6

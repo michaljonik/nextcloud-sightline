@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Vector store: sqlite-vec, exact (brute-force) search, one table per model.
 
 Brute force keeps the storage_id filter exact: there is no ANN recall loss inside the set

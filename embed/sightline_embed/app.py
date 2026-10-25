@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """HTTP API. The service knows only file IDs, storage IDs and vectors: no users, no paths,
 no Nextcloud credentials. Nextcloud pushes images in and checks permissions on results.
 

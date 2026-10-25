@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # sightline-embed: the embedding service for Sightline.
 #
 #   docker build -t sightline-embed embed/

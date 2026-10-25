@@ -3,6 +3,7 @@ name = "sightline-embed"
 version = "0.0.1"
 description = "Embedding service for Sightline, semantic photo search for Nextcloud"
 requires-python = ">=3.12"
+license = "AGPL-3.0-or-later"
 dependencies = [
     "fastapi>=0.120",
     "uvicorn>=0.38",

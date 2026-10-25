@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Rough model spike: embed a few hundred local photos and run text queries against them.
 
 Not production code. It answers two questions on the dev machine before anything is built:
@@ -53,7 +56,7 @@ def model_dir() -> Path:
 def out_dir() -> Path:
     return OUT_ROOT / MODEL
 
-# Same edge Sightline will request from IPreview (see CLAUDE.md, decision 4).
+# Same edge Sightline will request from IPreview (see docs/architecture.md, Indexing).
 PREVIEW_EDGE = 1024
 THUMB_EDGE = 256
 

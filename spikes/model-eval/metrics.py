@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Score methods against out/judgements.json: nP@8, MRR, and wins/losses vs the first model.
 
     uv run metrics.py --queries queries.txt MODEL [MODEL ...] [--captions out/captions-short.json]

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Render out/pool.json (union of all methods' top-k per query) as numbered contact sheets.
 
 Used to judge relevance by eye: note the numbers that match each query, then record them

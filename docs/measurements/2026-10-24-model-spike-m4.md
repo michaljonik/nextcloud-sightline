@@ -46,15 +46,15 @@ dev laptop, not the N305 target, so the timings say nothing definite about the t
 
 Judged by looking at the top 8 results per query.
 
-- **Clearly right at the top:** concrete objects and scenes. Examples: "man running with a
+- Clearly right at the top: concrete objects and scenes. Examples: "man running with a
   dog", "foggy morning", "autumn leaves", "trophy", "security device" (USB tokens, routers,
   a wall keypad), "skiing", "jet engine", "a man on a ski-lift", "dog working on a laptop",
   "texture", "snowy mountains", "close-up of a flower", "document or receipt".
-- **Reasonable:** softer concepts, e.g. "sad", "parenthood", "crazy child",
+- Reasonable: softer concepts, e.g. "sad", "parenthood", "crazy child",
   "father teaching kids", "blue eyed happy child".
-- **Weak:** photographic technique. "Shallow depth-of-field" returned misty lake
+- Weak: photographic technique. "Shallow depth-of-field" returned misty lake
   landscapes, not photos with a blurred background.
-- **Nothing to find:** queries for things not in the set ("birthday party with a cake",
+- Nothing to find: queries for things not in the set ("birthday party with a cake",
   "screenshot of a phone") returned the nearest unrelated photos. Their scores were lower,
   but not consistently.
 

@@ -40,21 +40,24 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
 
 ## Install
 
-1. Start the embedding service. Generate a token, then run the image built from `embed/`:
+1. Start the embedding service. Generate a token and keep it for step 3, then run the image
+   built from `embed/`. Replace `10.0.0.5` with the server's address on your internal
+   network:
 
    ```sh
+   TOKEN=$(openssl rand -hex 32); echo "$TOKEN"
    docker build -t sightline-embed embed/
-   docker run -d --name sightline-embed -p 8765:8765 -v sightline-embed:/data \
-     -e SIGHTLINE_TOKEN="$(openssl rand -hex 32)" \
+   docker run -d --name sightline-embed -p 10.0.0.5:8765:8765 -v sightline-embed:/data \
+     -e SIGHTLINE_TOKEN="$TOKEN" \
      -e SIGHTLINE_MODEL=immich-app/XLM-Roberta-Base-ViT-B-32__laion5b_s13b_b90k \
      sightline-embed
    ```
 
-   The model is downloaded on first start. Publish the port only on your internal network:
+   The model is downloaded on first start. Do not publish the port to the internet:
    embeddings reveal a lot about photos. See [embed/README.md](embed/README.md) for the
    options.
 
-2. Install the app. Copy or clone `app/` into Nextcloud's `custom_apps/sightline`, then:
+2. Install the app. Copy the `app/` folder to Nextcloud's `custom_apps/sightline`, then:
 
    ```sh
    occ app:enable sightline
@@ -121,4 +124,4 @@ cd embed && uv run pytest
 
 ## Licence
 
-Not final yet. Source files currently carry AGPL-3.0-or-later SPDX headers.
+AGPL-3.0-or-later, see [LICENSE](LICENSE).

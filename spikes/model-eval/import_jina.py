@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Lay out jinaai/jina-clip-v2's ONNX export like an Immich export.
 
 The repo ships one graph that takes input_ids and pixel_values together. spike.py times the

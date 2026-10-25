@@ -71,29 +71,29 @@ Queries better / worse than B/16-224 (nP@8), EN and PL:
 
 ## Findings
 
-- **Polish works.** SigLIP 2 B/16-224 loses about 2 points going from English to Polish
+- Polish works. SigLIP 2 B/16-224 loses about 2 points going from English to Polish
   queries (0.838 → 0.820). Every multilingual dual encoder here stays within ~4 points.
-- **XLM-R B/32 is the best value in this test**: best or equal-best nP@8 in both languages
+- XLM-R B/32 is the best value in this test: best or equal-best nP@8 in both languages
   at about a third of B/16's image cost, and 512-dim vectors (two thirds of the index size).
   This is better than Immich's published table suggests (there XLM-R B/32 and SigLIP 2 B/16
   are about equal in Polish), so it needs confirming on a second photo set.
-- **224 → 256 px buys nothing measurable**, in either language. This matches Immich's
+- 224 → 256 px buys nothing measurable, in either language. This matches Immich's
   measurement of the same step for SigLIP 1.
-- **B/16-384 is ~5 points better in English and ~3 in Polish** at ~3× the cost, mostly by
+- B/16-384 is ~5 points better in English and ~3 in Polish at ~3× the cost, mostly by
   filling more of the top 8 with relevant photos, not by ranking the first hit higher.
-- **L/16-256 did not show its published Polish advantage here** (0.764 vs 0.820). It is
+- L/16-256 did not show its published Polish advantage here (0.764 vs 0.820). It is
   not a tokenizer bug: tokens are identical to B/16's. It loses on a few queries with only
   1–2 relevant photos ("security device", "boy with a blue backpack"), where one swap moves
   the score a lot. With 27 queries this is noise, not proof that L/16 is worse, but it also
   gives no reason to pay 4× for it.
-- **Moondream2 captions are worse in English and collapse in Polish** (0.385). The captions
+- Moondream2 captions are worse in English and collapse in Polish (0.385). The captions
   are English and short; the multilingual text embedding does not bridge "puchar" to a
   caption that never mentions a trophy. Short captions also miss what queries ask for, and
   at ~8 s per photo 200k photos would take ~18 days on the M4 GPU.
 
 ## Consequences for Sightline
 
-- **Candidates for the default: XLM-R B/32 and SigLIP 2 B/16-224.** XLM-R B/32 is cheaper
+- Candidates for the default: XLM-R B/32 and SigLIP 2 B/16-224. XLM-R B/32 is cheaper
   and at least as good here, in both languages. Decide after the N305 run and a second,
   less curated photo set (phone photos, screenshots, near-duplicates).
 - Quality option: SigLIP 2 B/16-384 (~3× cost). Drop L/16-256 and B/16-256 from the

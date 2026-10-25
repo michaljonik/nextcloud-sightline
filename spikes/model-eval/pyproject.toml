@@ -2,6 +2,7 @@
 name = "model-eval"
 version = "0.1.0"
 requires-python = ">=3.12"
+license = "AGPL-3.0-or-later"
 dependencies = [
     "einops>=0.8.2",
     "huggingface-hub>=2.3.0",

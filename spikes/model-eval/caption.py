@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Michal Jonik
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Caption photos with Moondream2 for the caption-then-text-search comparison.
 
 Moondream2's remote code needs transformers 4.x, so this runs in its own environment:
