@@ -84,6 +84,16 @@ class IndexerTest extends TestCase {
 		$this->assertSame(['deleted'], $this->drain());
 	}
 
+	public function testMacResourceForkIsNotIndexed(): void {
+		$this->queueOne(QueueService::INDEX);
+		$this->rootFolder->method('getFirstNodeById')->willReturn($this->photo('/alice/files/Photos/._DSC_0042.NEF'));
+		$this->files->method('get')->willReturn($this->row('m1'));
+		$this->embed->expects($this->never())->method('index');
+		$this->files->expects($this->once())->method('delete')->with(42);
+
+		$this->drain();
+	}
+
 	public function testRejectedImageIsMarkedFailedAndDoesNotBlockTheQueue(): void {
 		$this->queueOne(QueueService::INDEX);
 		$this->rootFolder->method('getFirstNodeById')->willReturn($this->photo('/alice/files/a.jpg'));

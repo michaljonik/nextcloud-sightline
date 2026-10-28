@@ -66,7 +66,8 @@ class Indexer {
 		// Only photos under a user's files/ (not trash, versions or appdata). A trashed photo
 		// loses its vector; restoring it encodes it again.
 		if (!$node instanceof File || !str_starts_with($node->getMimetype(), 'image/')
-			|| !preg_match('#^/[^/]+/files/#', $node->getPath())) {
+			|| !preg_match('#^/[^/]+/files/#', $node->getPath())
+			|| PhotoFilter::isMacMetadata($node->getPath())) {
 			return $this->delete($fileId) + ['result' => 'not indexable'];
 		}
 		$storageId = $node->getMountPoint()->getNumericStorageId();
