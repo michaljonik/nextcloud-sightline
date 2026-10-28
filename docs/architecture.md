@@ -140,3 +140,10 @@ search) so it can be replaced if it becomes too slow at large library sizes.
 - End-to-end encrypted files are never indexed.
 - External storage changes are noticed only after Nextcloud scans that storage.
 - Group folders have not been tested yet.
+- First indexing is slow where no previews exist yet. One indexing job runs at a time; on an
+  Intel N305 with Nextcloud 35 and Imaginary it indexed 7,728 photos in 70 minutes
+  (0.54 s per photo), mostly spent generating previews.
+- Changing the model re-encodes every photo, and search covers only the re-encoded ones
+  until that finishes (see [Models](#models)).
+- sqlite-vec reclaims the space of deleted vectors only when a whole chunk of about 1,024
+  vectors is empty, so the database file does not shrink after deletions.
