@@ -57,6 +57,7 @@ All requests need `Authorization: Bearer $SIGHTLINE_TOKEN`.
 | `PUT /files/{fileid}?storage_id=N` | image bytes | encode and store (replaces); 422 if the image cannot be decoded |
 | `PATCH /files/{fileid}` | `{"storage_id": N}` | file moved to another storage |
 | `DELETE /files/{fileid}` | | removes the file's vector from every model's table |
+| `DELETE /files` | | drops every vector of every model and compacts the database; used by `occ sightline:purge` |
 | `POST /search` | `{"query", "storage_ids", "offset", "limit"}` | ranked `{fileid, score}` within the given storages |
 | `GET /health` | | model, dimensions, vector count |
 

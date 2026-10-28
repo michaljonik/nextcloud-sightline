@@ -72,6 +72,14 @@ def test_move_and_delete(client):
     assert client.delete("/files/1").json() == {"fileid": 1, "deleted": False}
 
 
+def test_delete_all(client):
+    put(client, 1, 10, b"cat")
+    put(client, 2, 20, b"dog")
+
+    assert client.delete("/files").json() == {"deleted": 2}
+    assert client.get("/health").json()["count"] == 0
+
+
 def test_search_validates_input(client):
     assert client.post("/search", json={"query": "", "storage_ids": [10]}).status_code == 422
     assert client.post("/search", json={"query": "cat", "storage_ids": [10], "limit": 501}).status_code == 422

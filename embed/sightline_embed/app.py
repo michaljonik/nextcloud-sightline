@@ -7,6 +7,7 @@ no Nextcloud credentials. Nextcloud pushes images in and checks permissions on r
     PUT    /files/{fileid}?storage_id=N   body: image bytes (JPEG/WebP/AVIF/PNG/HEIC)
     PATCH  /files/{fileid}                {"storage_id": N}   (file moved to another storage)
     DELETE /files/{fileid}
+    DELETE /files                         (every vector of every model: Sightline is removed)
     POST   /search                        {"query", "storage_ids", "offset", "limit"}
     GET    /health
 
@@ -87,6 +88,10 @@ def create_app(encoder: Encoder, store: VectorStore, token: str) -> FastAPI:
     @app.delete("/files/{fileid}")
     def delete_file(fileid: int) -> dict:
         return {"fileid": fileid, "deleted": store.delete(fileid)}
+
+    @app.delete("/files")
+    def delete_all() -> dict:
+        return {"deleted": store.clear()}
 
     @app.post("/search")
     def search(body: Search) -> dict:

@@ -26,6 +26,7 @@ Embeddings are computed by a separate local service (sightline-embed); nothing l
 	</background-jobs>
 	<commands>
 		<command>OCA\Sightline\Command\Index</command>
+		<command>OCA\Sightline\Command\Purge</command>
 		<command>OCA\Sightline\Command\Reconcile</command>
 		<command>OCA\Sightline\Command\Search</command>
 		<command>OCA\Sightline\Command\Status</command>

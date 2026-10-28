@@ -48,6 +48,11 @@ class EmbedClient {
 		$this->request('DELETE', '/files/' . $fileId, []);
 	}
 
+	/** Drop every vector of every model. Only for removing Sightline. @return int vectors dropped */
+	public function deleteAll(): int {
+		return $this->request('DELETE', '/files', [])['deleted'];
+	}
+
 	/**
 	 * @param list<int> $storageIds
 	 * @return array{model: string, results: list<array{fileid: int, score: float}>, exhausted: bool, timing_ms: array}

@@ -95,6 +95,11 @@ class FileRepository {
 			->executeStatement();
 	}
 
+	/** @return int how many rows were dropped */
+	public function clear(): int {
+		return $this->db->getQueryBuilder()->delete('sightline_files')->executeStatement();
+	}
+
 	/** @return array{indexed: int, failed: int, outdated: int} outdated: indexed with another model */
 	public function counts(string $model): array {
 		$qb = $this->db->getQueryBuilder();
