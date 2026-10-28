@@ -146,6 +146,11 @@ cd app && composer install && composer test
 cd embed && uv run pytest
 ```
 
+`scripts/package-app.sh` builds the app store archive. Pushing a tag `vX.Y.Z` that matches
+the version in `app/appinfo/info.xml` runs `.github/workflows/release.yml`: it creates a
+GitHub release with the archive and pushes the `sightline-embed` image to
+`ghcr.io/michaljonik/sightline-embed`.
+
 ## Licence
 
 AGPL-3.0-or-later, see [LICENSE](LICENSE).

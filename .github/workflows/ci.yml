@@ -24,6 +24,11 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
+      - name: Validate info.xml against the app store schema
+        run: |
+          sudo apt-get install -y --no-install-recommends libxml2-utils
+          curl -sSfL -o "$RUNNER_TEMP/info.xsd" https://apps.nextcloud.com/schema/apps/info.xsd
+          xmllint --noout --schema "$RUNNER_TEMP/info.xsd" appinfo/info.xml
       - run: composer install --no-interaction --no-progress
       - run: composer lint
       - run: composer test

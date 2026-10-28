@@ -1,6 +1,9 @@
 # Local agent instructions (not published)
 CLAUDE.md
 
+# Release archives from scripts/package-app.sh
+build/
+
 # macOS
 .DS_Store
 
