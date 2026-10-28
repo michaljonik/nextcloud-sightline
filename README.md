@@ -37,7 +37,9 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
 
 - Nextcloud 33 to 35, with system cron for background jobs.
 - Previews enabled for the formats you want indexed. HEIC needs Imagick with HEIC support or
-  Imaginary. RAW files are not indexed yet.
+  Imaginary. RAW files (NEF, DNG, ARW and others) need the
+  [Camera RAW Previews](https://apps.nextcloud.com/apps/camerarawpreviews) app; tested with
+  version 1.1.4.
 - A machine on the same network for `sightline-embed`: Docker or Python 3.12. With the
   default XLM-R B/32 model on an Intel N305, measured separately, indexing peaked at 1.1 GB
   of memory and the query side (text encoder only) at 2.2 GB.

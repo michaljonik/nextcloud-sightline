@@ -131,8 +131,11 @@ search) so it can be replaced if it becomes too slow at large library sizes.
 
 ## Limits
 
-- RAW files (NEF, DNG and others) are crawled, but Nextcloud core has no RAW preview
-  provider, so they end up as failed until a RAW path exists.
+- Nextcloud core has no RAW preview provider. With the Camera RAW Previews app
+  (`camerarawpreviews` 1.1.4) RAW files index like any other photo, and portrait RAWs come
+  out upright because the app applies the orientation from the RAW file. On a library with
+  39,895 NEF, DNG and ARW files, 8 failed. Without the app, RAW files end up as failed.
+- macOS resource-fork files (`._*` and anything under `.AppleDouble/`) are skipped.
 - HEIC needs a preview provider: Imagick built with HEIC support, or Imaginary.
 - End-to-end encrypted files are never indexed.
 - External storage changes are noticed only after Nextcloud scans that storage.
