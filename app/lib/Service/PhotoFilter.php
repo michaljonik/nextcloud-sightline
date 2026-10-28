@@ -30,7 +30,16 @@ final class PhotoFilter {
 				return false;
 			}
 		}
-		return true;
+		return !self::isMacMetadata($storagePath);
+	}
+
+	/**
+	 * Resource-fork copies that macOS writes to SMB and FAT volumes (`._IMG_0001.JPG`, or
+	 * files under `.AppleDouble/`). They carry a photo extension but no image.
+	 */
+	public static function isMacMetadata(string $path): bool {
+		return str_starts_with(basename($path), '._')
+			|| preg_match('#(^|/)\.AppleDouble/#', $path) === 1;
 	}
 
 	public static function hasPhotoExtension(string $path): bool {

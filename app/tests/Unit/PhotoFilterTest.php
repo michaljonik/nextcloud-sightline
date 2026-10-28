@@ -23,6 +23,10 @@ class PhotoFilterTest extends TestCase {
 			'preview cache' => ['appdata_oc123/preview/1/2/3/1024-1024.jpg', false, true],
 			'folder' => ['files/Photos', true, false],
 			'document' => ['files/notes.md', true, false],
+			'macOS resource fork' => ['files/Photos/._DSC_0042.NEF', false, true],
+			'AppleDouble folder' => ['files/Photos/.AppleDouble/DSC_0042.NEF', false, true],
+			'AppleDouble at storage root' => ['.AppleDouble/DSC_0042.NEF', false, true],
+			'dot in the name' => ['files/Photos/a._b.jpg', true, true],
 		];
 	}
 
