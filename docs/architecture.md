@@ -129,12 +129,20 @@ storage filter exact too: there is no approximate-search recall loss inside the 
 storages a user can see. The store sits behind a small interface (upsert, move, delete,
 search) so it can be replaced if it becomes too slow at large library sizes.
 
+On the Intel N305 with 122,972 vectors of 512 dimensions, a search takes 223 ms p50 in the
+service (94 ms to encode the query, 126 ms to scan) and about 0.36 s in Nextcloud for 50
+results. The storage filter barely shortens the scan, because sqlite-vec reads the whole
+table ([measurements](measurements/2026-10-28-production-n305.md)).
+
 ## Limits
 
 - Nextcloud core has no RAW preview provider. With the Camera RAW Previews app
   (`camerarawpreviews` 1.1.4) RAW files index like any other photo, and portrait RAWs come
   out upright because the app applies the orientation from the RAW file. On a library with
-  39,895 NEF, DNG and ARW files, 8 failed. Without the app, RAW files end up as failed.
+  about 40,000 NEF, DNG and ARW files, 19 failed: 11 on stale preview records, 7 empty or
+  damaged files, one unexplained
+  ([measurements](measurements/2026-10-28-production-n305.md)). Without the app, RAW files
+  end up as failed.
 - macOS resource-fork files (`._*` and anything under `.AppleDouble/`) are skipped.
 - HEIC needs a preview provider: Imagick built with HEIC support, or Imaginary.
 - End-to-end encrypted files are never indexed.
@@ -143,6 +151,9 @@ search) so it can be replaced if it becomes too slow at large library sizes.
 - First indexing is slow where no previews exist yet. One indexing job runs at a time; on an
   Intel N305 with Nextcloud 35 and Imaginary it indexed 7,728 photos in 70 minutes
   (0.54 s per photo), mostly spent generating previews.
+- The indexing job is time-insensitive. When `maintenance_window_start` is set, Nextcloud
+  runs it only in the maintenance window: on the N305 that came to about 4,600 photos a
+  night. `occ sightline:index` indexes in the foreground at any time.
 - Changing the model re-encodes every photo, and search covers only the re-encoded ones
   until that finishes (see [Models](#models)).
 - sqlite-vec reclaims the space of deleted vectors only when a whole chunk of about 1,024
