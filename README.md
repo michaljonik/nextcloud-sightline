@@ -44,6 +44,8 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
   default XLM-R B/32 model on an Intel N305, measured separately, indexing peaked at 1.1 GB
   of memory and the query side (text encoder only) at 2.2 GB.
 
+[docs/architecture.md](docs/architecture.md#limits) lists what Sightline does not handle yet.
+
 ![Sightline asks Nextcloud's preview system for a 1024 px image; Nextcloud makes and keeps a max-size preview first, so photos that already have thumbnails are cheap to index](docs/diagrams/where-images-come-from.svg)
 
 ## Install
