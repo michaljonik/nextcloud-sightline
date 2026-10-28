@@ -98,6 +98,22 @@ their owner.
 | `occ sightline:reconcile [--background]` | find new, changed, moved and deleted photos now |
 | `occ sightline:index [--limit N]` | process the queue in the foreground, with timings |
 | `occ sightline:search <user> <query>` | search as a user, with the same permission checks |
+| `occ sightline:purge [--skip-service]` | delete every vector, the indexing state and the settings |
+
+## Removing Sightline
+
+Disabling the app deletes nothing: enabling it again picks up where it stopped, without
+encoding the library again. To remove Sightline and the data it holds:
+
+```sh
+occ sightline:purge
+occ app:remove sightline
+```
+
+`sightline:purge` deletes all vectors in `sightline-embed` first and stops if the service is
+unreachable. If the service is gone already, use `--skip-service` and delete its data volume
+(`docker volume rm sightline-embed`). Nextcloud keeps the two empty tables
+(`oc_sightline_queue`, `oc_sightline_files`) after `app:remove`, as it does for every app.
 
 ## Related projects
 

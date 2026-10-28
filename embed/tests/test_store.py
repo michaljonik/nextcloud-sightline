@@ -55,6 +55,20 @@ def test_delete_removes_from_every_model_table(tmp_path):
     assert new.count() == 1
 
 
+def test_clear_drops_every_model_table(tmp_path):
+    old = VectorStore(tmp_path / "v.db", "old-model", DIMS)
+    new = VectorStore(tmp_path / "v.db", "new-model", DIMS)
+    old.upsert(1, 10, unit("cat"))
+    new.upsert(1, 10, unit("cat"))
+    new.upsert(2, 10, unit("dog"))
+
+    assert new.clear() == 3
+    assert new.count() == 0
+    assert new.search(unit("cat"), [10], k=5) == []
+    new.upsert(3, 10, unit("cat"))
+    assert new.count() == 1
+
+
 def test_model_ids_map_to_separate_tables(tmp_path):
     a = VectorStore(tmp_path / "v.db", "ViT-B-16-SigLIP2__webli", DIMS)
     b = VectorStore(tmp_path / "v.db", "XLM-Roberta-Base-ViT-B-32__laion5b_s13b_b90k", DIMS)

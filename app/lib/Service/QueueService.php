@@ -70,6 +70,11 @@ class QueueService {
 			->executeStatement();
 	}
 
+	/** @return int how many entries were dropped */
+	public function clear(): int {
+		return $this->db->getQueryBuilder()->delete('sightline_queue')->executeStatement();
+	}
+
 	public function size(): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->select($qb->func()->count('*'))->from('sightline_queue');

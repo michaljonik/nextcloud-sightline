@@ -29,11 +29,15 @@ class VectorStore:
         self._db.enable_load_extension(False)
         self._lock = threading.Lock()
         self.table = "vec_" + re.sub(r"\W", "_", model_id).lower()
+        self._dims = dims
         with self._lock, self._db:
-            self._db.execute(
-                f"CREATE VIRTUAL TABLE IF NOT EXISTS {self.table} USING vec0("
-                f"fileid INTEGER PRIMARY KEY, storage_id INTEGER, "
-                f"embedding float[{dims}] distance_metric=cosine)")
+            self._create()
+
+    def _create(self) -> None:
+        self._db.execute(
+            f"CREATE VIRTUAL TABLE IF NOT EXISTS {self.table} USING vec0("
+            f"fileid INTEGER PRIMARY KEY, storage_id INTEGER, "
+            f"embedding float[{self._dims}] distance_metric=cosine)")
 
     def upsert(self, fileid: int, storage_id: int, vector: np.ndarray) -> None:
         # vec0 has no UPSERT; delete one rowid at a time (DELETE ... IN scans the table).
@@ -55,6 +59,18 @@ class VectorStore:
             for table in self._tables():
                 deleted |= self._db.execute(f"DELETE FROM {table} WHERE fileid = ?", (fileid,)).rowcount > 0
             return deleted
+
+    def clear(self) -> int:
+        """Drop every model's vectors and give the space back; returns how many were held."""
+        with self._lock:
+            with self._db:
+                tables = self._tables()
+                held = sum(self._db.execute(f"SELECT count(*) FROM {t}").fetchone()[0] for t in tables)
+                for table in tables:
+                    self._db.execute(f"DROP TABLE {table}")
+                self._create()
+            self._db.execute("VACUUM")
+            return held
 
     def count(self) -> int:
         with self._lock:
