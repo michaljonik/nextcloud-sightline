@@ -9,14 +9,26 @@
 	<name>Sightline</name>
 	<summary>Semantic photo search, computed locally</summary>
 	<description><![CDATA[Type "dog in the forest" into the search bar and get matching photos, ranked by meaning.
-Embeddings are computed by a separate local service (sightline-embed); nothing leaves your server.]]></description>
+
+Sightline needs its embedding service, sightline-embed, running on your internal network
+(Docker or Python 3.12). Nextcloud sends each photo's preview to the service, which turns it
+into a vector and keeps it. At search time the service ranks the vectors and Nextcloud checks
+every result against the searching user's permissions. Nothing leaves your network.
+
+Installation: see the [README](https://github.com/michaljonik/nextcloud-sightline#install).]]></description>
 	<version>0.1.0</version>
-	<licence>agpl</licence>
+	<licence>AGPL-3.0-or-later</licence>
 	<author>Michal Jonik</author>
 	<namespace>Sightline</namespace>
+	<documentation>
+		<admin>https://github.com/michaljonik/nextcloud-sightline#install</admin>
+	</documentation>
 	<category>search</category>
 	<category>multimedia</category>
+	<website>https://github.com/michaljonik/nextcloud-sightline</website>
 	<bugs>https://github.com/michaljonik/nextcloud-sightline/issues</bugs>
+	<repository type="git">https://github.com/michaljonik/nextcloud-sightline.git</repository>
+	<screenshot>https://raw.githubusercontent.com/michaljonik/nextcloud-sightline/main/docs/screenshots/unified-search.png</screenshot>
 	<dependencies>
 		<nextcloud min-version="33" max-version="35"/>
 	</dependencies>
