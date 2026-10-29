@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Weekly, to catch changes outside the repository: the app store schema, the Python base
+  # image and the GitHub-hosted runners.
+  schedule:
+    - cron: "23 5 * * 1"
 
 permissions:
   contents: read

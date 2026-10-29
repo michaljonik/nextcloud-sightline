@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: composer
+    directory: /app
+    schedule:
+      interval: weekly
+    groups:
+      composer:
+        patterns: ["*"]
+
+  - package-ecosystem: uv
+    directory: /embed
+    schedule:
+      interval: weekly
+    # sqlite-vec is pinned on purpose (see docs/architecture.md); upgrade it by hand.
+    ignore:
+      - dependency-name: sqlite-vec
+    groups:
+      python:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /embed
+    schedule:
+      interval: weekly
