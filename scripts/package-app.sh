@@ -32,6 +32,7 @@ done
 cp "$root/LICENSE" "$stage/sightline/"
 
 mkdir -p "$out"
-# COPYFILE_DISABLE keeps macOS tar from adding ._ resource-fork files.
-COPYFILE_DISABLE=1 tar -czf "$out/sightline-$version.tar.gz" -C "$stage" sightline
+# COPYFILE_DISABLE and --no-xattrs keep macOS tar from adding ._ resource-fork files and
+# extended attributes, which GNU tar warns about on every file when extracting.
+COPYFILE_DISABLE=1 tar --no-xattrs -czf "$out/sightline-$version.tar.gz" -C "$stage" sightline
 echo "$out/sightline-$version.tar.gz"
