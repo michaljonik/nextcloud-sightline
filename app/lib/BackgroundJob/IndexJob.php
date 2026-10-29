@@ -29,7 +29,8 @@ class IndexJob extends TimedJob {
 	) {
 		parent::__construct($time);
 		$this->setInterval(5 * 60);
-		$this->setTimeSensitivity(self::TIME_INSENSITIVE);
+		// Time-sensitive, so a set maintenance window does not hold first indexing to the night.
+		$this->setTimeSensitivity(self::TIME_SENSITIVE);
 		$this->setAllowParallelRuns(false);
 	}
 
