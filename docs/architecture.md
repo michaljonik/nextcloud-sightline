@@ -65,7 +65,9 @@ never generate previews, so uploads do not slow down. Two event families are nee
   app data.
 
 A background job drains the queue every five minutes for up to four minutes (15 seconds when
-Nextcloud runs background jobs in AJAX or webcron mode). For each file it:
+Nextcloud runs background jobs in AJAX or webcron mode), around the clock: it is
+time-sensitive, so a `maintenance_window_start` in `config.php` does not hold it back. For
+each file it:
 
 1. resolves the file ID; files outside a user's `files/` folder lose their vector;
 2. skips the file if its etag and model match the bookkeeping row;
@@ -151,9 +153,9 @@ table ([measurements](measurements/2026-10-28-production-n305.md)).
 - First indexing is slow where no previews exist yet. One indexing job runs at a time; on an
   Intel N305 with Nextcloud 35 and Imaginary it indexed 7,728 photos in 70 minutes
   (0.54 s per photo), mostly spent generating previews.
-- The indexing job is time-insensitive. When `maintenance_window_start` is set, Nextcloud
-  runs it only in the maintenance window: on the N305 that came to about 4,600 photos a
-  night. `occ sightline:index` indexes in the foreground at any time.
+- First indexing loads the server during the day as well: on the N305 Imaginary used about
+  one core and `sightline-embed` about three. Search while indexing runs has not been
+  measured.
 - Changing the model re-encodes every photo, and search covers only the re-encoded ones
   until that finishes (see [Models](#models)).
 - sqlite-vec reclaims the space of deleted vectors only when a whole chunk of about 1,024

@@ -75,9 +75,8 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
 
 3. In Administration settings → Sightline, enter the service URL and token. The page shows
    whether the service is reachable and how far indexing has got. The first crawl starts with
-   the next background job run. If `maintenance_window_start` is set in `config.php`,
-   Nextcloud indexes only inside that window; run `occ sightline:index` to index a large
-   library faster the first time.
+   the next background job run. To index a large library faster the first time, run
+   `occ sightline:index` in the foreground.
 
 ## Models
 
