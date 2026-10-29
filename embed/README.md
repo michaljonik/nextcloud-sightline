@@ -10,14 +10,15 @@ Embeddings are personal data. Run the service on the internal network only.
 ## Run with Docker
 
 ```sh
-docker build -t sightline-embed .
 docker run -d --name sightline-embed -p 10.0.0.5:8765:8765 -v sightline-embed:/data \
   -e SIGHTLINE_TOKEN=... \
   -e SIGHTLINE_MODEL=immich-app/XLM-Roberta-Base-ViT-B-32__laion5b_s13b_b90k \
-  sightline-embed
+  ghcr.io/michaljonik/sightline-embed:0.1.0
 ```
 
-Replace `10.0.0.5` with the server's address on your internal network. On first start the
+Replace `10.0.0.5` with the server's address on your internal network. Released images are
+published for amd64 and arm64; `docker build -t sightline-embed .` in this folder builds one
+from source. On first start the
 model's ONNX files are downloaded into `/data/models`; vectors are stored in
 `/data/sightline.db`. The container runs as an unprivileged user.
 

@@ -50,24 +50,25 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
 
 ## Install
 
-1. Start the embedding service. Generate a token and keep it for step 3, then run the image
-   built from `embed/`. Replace `10.0.0.5` with the server's address on your internal
-   network:
+1. Start the embedding service. Generate a token and keep it for step 3, then run the
+   image. Replace `10.0.0.5` with the server's address on your internal network:
 
    ```sh
    TOKEN=$(openssl rand -hex 32); echo "$TOKEN"
-   docker build -t sightline-embed embed/
    docker run -d --name sightline-embed -p 10.0.0.5:8765:8765 -v sightline-embed:/data \
      -e SIGHTLINE_TOKEN="$TOKEN" \
      -e SIGHTLINE_MODEL=immich-app/XLM-Roberta-Base-ViT-B-32__laion5b_s13b_b90k \
-     sightline-embed
+     ghcr.io/michaljonik/sightline-embed:0.1.0
    ```
 
-   The model is downloaded on first start. Do not publish the port to the internet:
-   embeddings reveal a lot about photos. See [embed/README.md](embed/README.md) for the
-   options.
+   The image is built for amd64 and arm64; `docker build -t sightline-embed embed/` builds
+   it from source instead. The model is downloaded on first start. Do not publish the port
+   to the internet: embeddings reveal a lot about photos. See
+   [embed/README.md](embed/README.md) for the options.
 
-2. Install the app. Copy the `app/` folder to Nextcloud's `custom_apps/sightline`, then:
+2. Install the app. Download `sightline-0.1.0.tar.gz` from the
+   [releases](https://github.com/michaljonik/nextcloud-sightline/releases), extract it into
+   Nextcloud's `custom_apps/` folder (it holds one folder, `sightline/`), then:
 
    ```sh
    occ app:enable sightline
