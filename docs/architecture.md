@@ -134,7 +134,9 @@ search) so it can be replaced if it becomes too slow at large library sizes.
 On the Intel N305 with 122,972 vectors of 512 dimensions, a search takes 223 ms p50 in the
 service (94 ms to encode the query, 126 ms to scan) and about 0.36 s in Nextcloud for 50
 results. The storage filter barely shortens the scan, because sqlite-vec reads the whole
-table ([measurements](measurements/2026-10-28-production-n305.md)).
+table ([measurements](measurements/2026-10-28-production-n305.md)). While indexing runs the
+median stays the same but the 95th percentile rises to 1.3 s, because indexing and search
+share the service's CPUs ([measurements](measurements/2026-10-30-search-while-indexing-n305.md)).
 
 ## Limits
 
@@ -154,8 +156,8 @@ table ([measurements](measurements/2026-10-28-production-n305.md)).
   Intel N305 with Nextcloud 35 and Imaginary it indexed 7,728 photos in 70 minutes
   (0.54 s per photo), mostly spent generating previews.
 - First indexing loads the server during the day as well: on the N305 Imaginary used about
-  one core and `sightline-embed` about three. Search while indexing runs has not been
-  measured.
+  one core and `sightline-embed` about three. While it runs, about a quarter of searches take
+  0.3 to 1.4 s instead of about 0.22 s in the service.
 - Changing the model re-encodes every photo, and search covers only the re-encoded ones
   until that finishes (see [Models](#models)).
 - sqlite-vec reclaims the space of deleted vectors only when a whole chunk of about 1,024
