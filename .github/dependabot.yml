@@ -31,3 +31,7 @@ updates:
     directory: /embed
     schedule:
       interval: weekly
+    # onnxruntime 1.31 has no cp315 wheels; drop this once it ships them.
+    ignore:
+      - dependency-name: python
+        versions: [">=3.15"]
