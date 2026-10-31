@@ -33,9 +33,11 @@ register_heif_opener()
 OUTPUT_NAMES = ("embedding", "image_embeds", "text_embeds", "pooler_output")
 
 
-def _session(path: Path, threads: int) -> ort.InferenceSession:
+def _session(path: Path, threads: int, spin: bool = True) -> ort.InferenceSession:
     opts = ort.SessionOptions()
     opts.intra_op_num_threads = threads
+    if not spin:
+        opts.add_session_config_entry("session.intra_op.allow_spinning", "0")
     return ort.InferenceSession(str(path), opts, providers=["CPUExecutionProvider"])
 
 
@@ -51,7 +53,9 @@ class OnnxEncoder:
         self.model_id = model_dir.name
         config = json.loads((model_dir / "config.json").read_text())
         self.dims = int(config["embed_dim"])
-        self._visual = _session(model_dir / "visual" / "model.onnx", threads)
+        # Idle image-encoder threads would spin and take CPU from searches running meanwhile;
+        # the text encoder keeps spinning, which keeps query encoding fast.
+        self._visual = _session(model_dir / "visual" / "model.onnx", threads, spin=False)
         self._pre = json.loads((model_dir / "visual" / "preprocess_cfg.json").read_text())
 
         text_cfg = config["text_cfg"]
