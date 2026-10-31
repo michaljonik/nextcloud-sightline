@@ -37,12 +37,11 @@ ms, p50 / p95:
 - The median does not change; the tail does. Over all storages, 18 of 60 requests took more
   than 300 ms while indexing ran (12 more than 600 ms), against none in the idle set.
 - Both query encoding and the scan slow down, not only the scan. The store lock is held for a
-  few milliseconds per upsert, so the likely cause is CPU. Two candidates: image encoding for
-  indexing and text encoding for search each use 4 ONNX Runtime threads inside a 4-CPU
-  limit, and preview generation runs on the same machine. The container ran at 392–412 % CPU
-  during both sets. A reproduction on the M4
-  ([2026-10-31](2026-10-31-search-while-indexing-m4.md)) found the first one, but at this
-  indexing rate it explained only a small part.
+  few milliseconds per upsert, so the likely cause is CPU: image encoding for indexing and
+  text encoding for search each use 4 ONNX Runtime threads inside a 4-CPU limit. The
+  container ran at 392–412 % CPU during both sets. A follow-up the next day
+  ([2026-10-31](2026-10-31-cpu-while-indexing-n305.md)) confirmed it: the container was
+  throttled by its CPU limit while the host had idle threads.
 - Indexing slowed by about a quarter while the searches ran: 3.4 photos per 10 s against 4.6
   in the rest of the same run. That was 43 s of back-to-back searches, far more than people
   searching would cause.

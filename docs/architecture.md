@@ -135,8 +135,10 @@ On the Intel N305 with 122,972 vectors of 512 dimensions, a search takes 223 ms 
 service (94 ms to encode the query, 126 ms to scan) and about 0.36 s in Nextcloud for 50
 results. The storage filter barely shortens the scan, because sqlite-vec reads the whole
 table ([measurements](measurements/2026-10-28-production-n305.md)). While indexing runs the
-median stays the same but the 95th percentile rises to 1.3 s, because search competes with
-indexing for CPU ([measurements](measurements/2026-10-30-search-while-indexing-n305.md)).
+median stays the same but the 95th percentile rises to 1.3 s: together they exceed the
+service container's CPU limit
+([measurements](measurements/2026-10-30-search-while-indexing-n305.md),
+[follow-up](measurements/2026-10-31-cpu-while-indexing-n305.md)).
 
 ## Limits
 
