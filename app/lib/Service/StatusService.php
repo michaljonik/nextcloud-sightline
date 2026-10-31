@@ -28,6 +28,7 @@ class StatusService {
 	 * @return array{
 	 *     service: array{ok: bool, model?: string, dims?: int, count?: int, error?: string},
 	 *     files: array{indexed: int, failed: int, outdated: int},
+	 *     search_model: string,
 	 *     queue: int,
 	 *     pending: array{crawls: int, sweeps: int},
 	 *     last_reconcile: int,
@@ -45,6 +46,7 @@ class StatusService {
 		return [
 			'service' => $service,
 			'files' => $this->files->counts($this->embed->model()),
+			'search_model' => $this->embed->searchModel(),
 			'queue' => $this->queue->size(),
 			'pending' => $this->reconciler->pending(),
 			'last_reconcile' => $this->appConfig->getValueInt(Application::APP_ID, 'last_reconcile'),

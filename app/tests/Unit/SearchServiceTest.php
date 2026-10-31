@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace OCA\Sightline\Tests\Unit;
 
 use OCA\Sightline\Service\EmbedClient;
+use OCA\Sightline\Service\EmbedException;
 use OCA\Sightline\Service\SearchService;
 use OCP\Files\Config\ICachedMountInfo;
 use OCP\Files\Config\IUserMountCache;
@@ -31,7 +32,7 @@ class SearchServiceTest extends TestCase {
 
 		$this->assertSame([1, 2, 3, 4, 5], $page['ids']);
 		$this->assertSame(5, $page['cursor']);
-		$this->assertSame([['storage_ids' => [7, 9], 'offset' => 0, 'limit' => 20]], $this->calls);
+		$this->assertSame([['storage_ids' => [7, 9], 'offset' => 0, 'limit' => 20, 'model' => null]], $this->calls);
 	}
 
 	public function testInvisibleResultsAreSkippedAndStillAdvanceTheCursor(): void {
@@ -57,14 +58,38 @@ class SearchServiceTest extends TestCase {
 		$this->assertSame(array_sum(array_column($this->calls, 'limit')), $page['cursor']);
 	}
 
+	public function testPreviousModelAnswersDuringAModelChange(): void {
+		$this->search(total: 100, visible: range(1, 100), cursor: 0, limit: 5, searchModel: 'old');
+
+		$this->assertSame(['old'], array_column($this->calls, 'model'));
+	}
+
+	public function testCurrentModelIsNotNamed(): void {
+		$this->search(total: 100, visible: range(1, 100), cursor: 0, limit: 5, searchModel: 'new');
+
+		$this->assertSame([null], array_column($this->calls, 'model'));
+	}
+
+	public function testFallsBackToTheCurrentModelWhenThePreviousIsGone(): void {
+		$page = $this->search(total: 100, visible: range(1, 100), cursor: 0, limit: 5, searchModel: 'gone');
+
+		$this->assertSame([1, 2, 3, 4, 5], $page['ids']);
+		$this->assertSame(['gone', null], array_column($this->calls, 'model'));
+	}
+
 	/** @return array{ids: list<int>, cursor: ?int} */
-	private function search(int $total, array $visible, int $cursor, int $limit): array {
+	private function search(int $total, array $visible, int $cursor, int $limit, string $searchModel = ''): array {
 		$embed = $this->createMock(EmbedClient::class);
-		$embed->method('search')->willReturnCallback(function (string $q, array $storageIds, int $offset, int $n) use ($total) {
-			$this->calls[] = ['storage_ids' => $storageIds, 'offset' => $offset, 'limit' => $n];
+		$embed->method('model')->willReturn('new');
+		$embed->method('searchModel')->willReturn($searchModel);
+		$embed->method('search')->willReturnCallback(function (string $q, array $storageIds, int $offset, int $n, ?string $model = null) use ($total) {
+			$this->calls[] = ['storage_ids' => $storageIds, 'offset' => $offset, 'limit' => $n, 'model' => $model];
+			if ($model === 'gone') {
+				throw new EmbedException('model gone is not searchable here', 409);
+			}
 			$ids = range($offset + 1, min($offset + $n, $total));
 			return [
-				'model' => 'm',
+				'model' => $model ?? 'new',
 				'results' => array_map(fn (int $id) => ['fileid' => $id, 'score' => 1 - $id / 10000], $offset >= $total ? [] : $ids),
 				'exhausted' => $offset + $n >= $total,
 				'timing_ms' => [],

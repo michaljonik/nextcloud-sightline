@@ -98,18 +98,38 @@ database-only, in pages of 1000 file IDs that resume from a cursor:
   `getByAncestorInStorage()`) and queues photos that are new, changed or indexed with
   another model;
 - the sweep walks the bookkeeping table (`IFileAccess::getByFileIds()`) and queues rows whose
-  file is gone, trashed or on another storage.
+  file is gone, trashed, on another storage or indexed with another model.
 
 The admin page and `occ sightline:reconcile` can start the same passes on demand.
 
 ## Models
 
 The service is model-agnostic: any CLIP-family image and text encoder in Immich's ONNX
-export layout works. Each vector is stored with its model ID, in one table per model. When
-the service is restarted with another model, the app notices the new model ID (on the next
-health check or indexed file), and reconciliation queues every photo for re-encoding. Until
-that finishes, search covers only the photos already re-encoded. Deleting a file removes its
-vector from every model's table.
+export layout works. Each vector is stored with its model ID, in one table per model, and
+the service remembers the export folder of every model it has run. Deleting or moving a file
+updates every model's table.
+
+### Changing the model
+
+When the service is restarted with another model, the app notices the new model ID (on the
+next health check or indexed file), and reconciliation queues every photo for re-encoding.
+Meanwhile search stays on the previous model: the service loads that model's text encoder
+again (not its image encoder) and ranks the previous model's vectors when a query names it.
+The app records which model answers queries (`search_model`) next to the one the service
+indexes with. After each indexing run it checks the bookkeeping table; once no row is left
+with the previous model, it moves search to the new model and asks the service to drop the
+previous model's vectors, which are personal data like any other.
+
+Two consequences:
+
+- Photos added during the change are encoded only with the new model, so search finds them
+  after the switch.
+- If the service cannot load the previous model (its export folder is gone), the app moves
+  search to the new model at once. Search then covers only the photos re-encoded so far, as
+  it did before this switch existed.
+
+The sweep also queues rows indexed with the previous model, so a photo that no crawl reaches
+cannot hold the switch back.
 
 Measured model comparisons are in [docs/measurements](measurements/).
 
@@ -160,7 +180,8 @@ service container's CPU limit
 - First indexing loads the server during the day as well: on the N305 Imaginary used about
   one core and `sightline-embed` about three. While it runs, about a quarter of searches take
   0.3 to 1.4 s instead of about 0.22 s in the service.
-- Changing the model re-encodes every photo, and search covers only the re-encoded ones
-  until that finishes (see [Models](#models)).
+- Changing the model re-encodes every photo. Search stays on the previous model until that
+  finishes, so photos added in the meantime are found only after the switch, and the service
+  needs memory for a second text encoder (see [Changing the model](#changing-the-model)).
 - sqlite-vec reclaims the space of deleted vectors only when a whole chunk of about 1,024
   vectors is empty, so the database file does not shrink after deletions.

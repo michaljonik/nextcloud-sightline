@@ -104,6 +104,24 @@ class ReconcilerTest extends TestCase {
 		$this->assertSame(['cursor' => 5, 'done' => true, 'seen' => 5, 'queued' => 4], $page);
 	}
 
+	public function testSweepQueuesRowsIndexedWithAnotherModel(): void {
+		// Without this a photo outside every crawled mount would hold search on the old model.
+		$this->files->method('page')->willReturn([
+			$this->row(1, 7, 'e1', 'old-model'),
+			$this->row(2, 7, 'e2', '', FileRepository::STATUS_FAILED),
+			$this->row(3, 7, 'e3'),
+		]);
+		$this->fileAccess->method('getByFileIds')->willReturn([
+			$this->entry(1, 7, 'files/1.jpg', 'e1'),
+			$this->entry(2, 7, 'files/2.jpg', 'e2'),
+			$this->entry(3, 7, 'files/3.jpg', 'e3'),
+		]);
+
+		$this->reconciler->sweepPage(0);
+
+		$this->assertSame([[1, 7, 'index']], $this->queued);
+	}
+
 	public function testScheduleSkipsWhatIsStillRunning(): void {
 		$this->fileAccess->method('getDistinctMounts')->willReturnCallback(fn () => yield from [
 			['storage_id' => 7, 'root_id' => 1, 'overridden_root' => 2],

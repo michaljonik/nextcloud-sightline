@@ -48,8 +48,8 @@ class Search extends Command {
 		foreach ($page['hits'] as $hit) {
 			$output->writeln(sprintf('%.3f  %d  %s', $hit['score'], $hit['node']->getId(), $hit['node']->getPath()));
 		}
-		$output->writeln(sprintf('%d hits, next cursor %s, %d round(s), %.0f ms total, service %s',
-			count($page['hits']), $page['cursor'] ?? 'none', $page['rounds'], $ms, json_encode($page['timing_ms'])));
+		$output->writeln(sprintf('%d hits, next cursor %s, %d round(s), %.0f ms total, model %s, service %s',
+			count($page['hits']), $page['cursor'] ?? 'none', $page['rounds'], $ms, $page['model'] ?? 'none', json_encode($page['timing_ms'])));
 		return 0;
 	}
 }

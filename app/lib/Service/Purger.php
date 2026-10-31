@@ -21,7 +21,7 @@ use OCP\IAppConfig;
  */
 class Purger {
 	/** App config keys Sightline writes. Nextcloud's own keys (enabled, installed_version) stay. */
-	public const CONFIG_KEYS = ['embed_url', 'embed_token', 'service_model', 'last_reconcile', 'debug_events'];
+	public const CONFIG_KEYS = ['embed_url', 'embed_token', 'service_model', 'search_model', 'last_reconcile', 'debug_events'];
 
 	public function __construct(
 		private EmbedClient $embed,

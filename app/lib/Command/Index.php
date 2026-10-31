@@ -10,6 +10,7 @@ namespace OCA\Sightline\Command;
 
 use OCA\Sightline\Service\EmbedException;
 use OCA\Sightline\Service\Indexer;
+use OCA\Sightline\Service\ModelSwitch;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,6 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Index extends Command {
 	public function __construct(
 		private Indexer $indexer,
+		private ModelSwitch $modelSwitch,
 	) {
 		parent::__construct();
 	}
@@ -51,6 +53,7 @@ class Index extends Command {
 						$output->writeln(count($rows) . ' done');
 					}
 				});
+			$output->writeln('search model: ' . $this->modelSwitch->check());
 		} catch (EmbedException $e) {
 			$stopped = $e->getMessage();
 		}

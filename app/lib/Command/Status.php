@@ -31,6 +31,9 @@ class Status extends Command {
 			? sprintf('service: ok, model %s (%d dims), %d vectors', $service['model'], $service['dims'], $service['count'])
 			: 'service: unreachable: ' . $service['error']);
 		$output->writeln(sprintf('photos: %d indexed, %d failed, %d with an old model', $s['files']['indexed'], $s['files']['failed'], $s['files']['outdated']));
+		if ($service['ok'] && $s['search_model'] !== '' && $s['search_model'] !== $service['model']) {
+			$output->writeln(sprintf('search: still %s until every photo has a %s vector', $s['search_model'], $service['model']));
+		}
 		$output->writeln(sprintf('queue: %d; background crawls pending: %d, sweeps: %d', $s['queue'], $s['pending']['crawls'], $s['pending']['sweeps']));
 		$output->writeln('last reconciliation: ' . ($s['last_reconcile'] > 0 ? date('c', $s['last_reconcile']) : 'never'));
 		return $service['ok'] ? 0 : 1;
