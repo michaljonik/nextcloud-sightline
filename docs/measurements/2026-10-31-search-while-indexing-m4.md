@@ -54,7 +54,8 @@ Indexing with a 2 s pause, before and after turning spinning off in the image en
 - At the production indexing rate, the effect inside the service is small here: p95 rose by
   about 30 ms, within the noise between runs. On production it rose by about 1,050 ms. The
   N305 encodes an image about 6 times slower on one thread (204 ms against 34 ms), so the
-  same load weighs more there, and preview generation for RAW files runs on the same machine.
-  This test cannot say how much of the production tail either explains.
+  same load weighs more there. A check on production the same day
+  ([2026-10-31](2026-10-31-cpu-while-indexing-n305.md)) found the service container
+  throttled by its CPU limit while the host had idle threads, which points to the same cause.
 - Moving image encoding off the event loop (the upload handler is `async` and encodes in
   place) made the full-load case worse: 38 requests over 300 ms. Not pursued.
