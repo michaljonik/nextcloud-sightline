@@ -14,5 +14,6 @@ dependencies = [
     "sentence-transformers>=4",
     "tokenizers>=0.22",
     "torch>=2.14.1",
+    "torchvision>=0.29.2",
     "transformers>=5",
 ]
