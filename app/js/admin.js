@@ -54,7 +54,11 @@
 				? format(strings.serviceOk, { model: service.model, count: number(service.count) })
 				: format(strings.serviceDown, { error: service.error }), !service.ok)
 			field('indexed', number(status.files.indexed))
-			field('outdated', number(status.files.outdated))
+			// During a model change the previous model answers queries until re-encoding ends.
+			const switching = service.ok && status.search_model && status.search_model !== service.model
+			field('outdated', switching
+				? format(strings.switching, { count: number(status.files.outdated), model: status.search_model })
+				: number(status.files.outdated))
 			field('failed', number(status.files.failed))
 			field('queue', number(status.queue))
 			const pending = status.pending

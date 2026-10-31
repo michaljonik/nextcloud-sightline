@@ -49,14 +49,16 @@ def _run(sess: ort.InferenceSession, feed: dict) -> np.ndarray:
 
 
 class OnnxEncoder:
-    def __init__(self, model_dir: Path, threads: int = 0):
+    def __init__(self, model_dir: Path, threads: int = 0, text_only: bool = False):
+        """`text_only` skips the image encoder: a previous model only answers queries."""
         self.model_id = model_dir.name
         config = json.loads((model_dir / "config.json").read_text())
         self.dims = int(config["embed_dim"])
-        # Idle image-encoder threads would spin and take CPU from searches running meanwhile;
-        # the text encoder keeps spinning, which keeps query encoding fast.
-        self._visual = _session(model_dir / "visual" / "model.onnx", threads, spin=False)
-        self._pre = json.loads((model_dir / "visual" / "preprocess_cfg.json").read_text())
+        if not text_only:
+            # Idle image-encoder threads would spin and take CPU from searches running meanwhile;
+            # the text encoder keeps spinning, which keeps query encoding fast.
+            self._visual = _session(model_dir / "visual" / "model.onnx", threads, spin=False)
+            self._pre = json.loads((model_dir / "visual" / "preprocess_cfg.json").read_text())
 
         text_cfg = config["text_cfg"]
         context = text_cfg.get("context_length", 77)

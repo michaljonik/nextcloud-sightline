@@ -30,7 +30,7 @@ class SearchService {
 	 * The cursor is an offset into the service's ranking, not into the filtered list, so the
 	 * next page resumes exactly where this one stopped reading.
 	 *
-	 * @return array{hits: list<array{node: File, score: float}>, cursor: ?int, rounds: int, timing_ms: list<array>}
+	 * @return array{hits: list<array{node: File, score: float}>, cursor: ?int, rounds: int, model: ?string, timing_ms: list<array>}
 	 */
 	public function search(IUser $user, string $query, int $cursor, int $limit): array {
 		// The prefilter is for relevance only: a share mount reports the owner's whole
@@ -40,22 +40,36 @@ class SearchService {
 			$this->mountCache->getMountsForUser($user),
 		)));
 		$userFolder = $this->rootFolder->getUserFolder($user->getUID());
+		// During a model change the previous model answers until the new one has every photo.
+		$model = $this->embed->searchModel();
+		$model = $model === '' || $model === $this->embed->model() ? null : $model;
 
 		$hits = [];
 		$timing = [];
+		$answered = null;
 		$offset = $cursor;
 		$exhausted = false;
 		for ($round = 1; $round <= self::MAX_ROUNDS; $round++) {
 			$batch = max(2 * ($limit - count($hits)), 20);
-			$response = $this->embed->search($query, $storageIds, $offset, $batch);
+			try {
+				$response = $this->embed->search($query, $storageIds, $offset, $batch, $model);
+			} catch (EmbedException $e) {
+				if ($model === null || $e->getCode() !== 409) {
+					throw $e;
+				}
+				// The service no longer holds the previous model; ModelSwitch catches up later.
+				$model = null;
+				$response = $this->embed->search($query, $storageIds, $offset, $batch);
+			}
 			$timing[] = $response['timing_ms'];
+			$answered = $response['model'];
 			foreach ($response['results'] as $result) {
 				$offset++;
 				$node = $userFolder->getFirstNodeById($result['fileid']);
 				if ($node instanceof File) {
 					$hits[] = ['node' => $node, 'score' => $result['score']];
 					if (count($hits) === $limit) {
-						return ['hits' => $hits, 'cursor' => $offset, 'rounds' => $round, 'timing_ms' => $timing];
+						return ['hits' => $hits, 'cursor' => $offset, 'rounds' => $round, 'model' => $answered, 'timing_ms' => $timing];
 					}
 				}
 			}
@@ -66,6 +80,6 @@ class SearchService {
 		}
 		// Out of rounds but not of ranking: return a short page and let the next one continue.
 		return ['hits' => $hits, 'cursor' => $exhausted ? null : $offset,
-			'rounds' => min($round, self::MAX_ROUNDS), 'timing_ms' => $timing];
+			'rounds' => min($round, self::MAX_ROUNDS), 'model' => $answered, 'timing_ms' => $timing];
 	}
 }

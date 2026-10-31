@@ -21,8 +21,8 @@ use OCP\IAppConfig;
  *
  * - crawl: walks every user-files mount by file ID and queues photos that are new, changed
  *   or indexed with another model;
- * - sweep: walks the bookkeeping table and queues rows whose file is gone, trashed or on
- *   another storage.
+ * - sweep: walks the bookkeeping table and queues rows whose file is gone, trashed, on
+ *   another storage or indexed with another model.
  *
  * Both are pure database work in pages of PAGE files and resume from a file ID cursor, so a
  * background job can stop after any page.
@@ -122,6 +122,7 @@ class Reconciler {
 		foreach ($rows === [] ? [] : $this->fileAccess->getByFileIds(array_column($rows, 'file_id')) as $entry) {
 			$entries[$entry->getId()] = $entry;
 		}
+		$model = $this->embed->model();
 		$queued = 0;
 		foreach ($rows as $row) {
 			$entry = $entries[$row['file_id']] ?? null;
@@ -129,7 +130,9 @@ class Reconciler {
 				// Deleted, or trashed: a trashed photo loses its vector.
 				$this->queue->enqueue($row['file_id'], $row['storage_id'], QueueService::DELETE);
 				$queued++;
-			} elseif ($entry->getStorageId() !== $row['storage_id'] || $entry->getEtag() !== $row['etag']) {
+			} elseif ($entry->getStorageId() !== $row['storage_id'] || $entry->getEtag() !== $row['etag']
+				// Also outside every crawled mount, so search can switch to a new model.
+				|| ($row['status'] === FileRepository::STATUS_INDEXED && $model !== '' && $row['model'] !== $model)) {
 				$this->queue->enqueue($row['file_id'], $entry->getStorageId(), QueueService::INDEX);
 				$queued++;
 			}

@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace OCA\Sightline\BackgroundJob;
 
-use OCA\Sightline\Service\EmbedClient;
 use OCA\Sightline\Service\EmbedException;
+use OCA\Sightline\Service\ModelSwitch;
 use OCA\Sightline\Service\Reconciler;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
@@ -22,7 +22,7 @@ class ReconcileJob extends TimedJob {
 	public function __construct(
 		ITimeFactory $time,
 		private Reconciler $reconciler,
-		private EmbedClient $embed,
+		private ModelSwitch $modelSwitch,
 	) {
 		parent::__construct($time);
 		$this->setInterval(24 * 60 * 60);
@@ -32,8 +32,9 @@ class ReconcileJob extends TimedJob {
 
 	protected function run($argument): void {
 		try {
-			// Learn the service's current model, so the crawl queues photos indexed with another.
-			$this->embed->rememberModel($this->embed->health()['model']);
+			// Learn the service's current model, so the crawl queues photos indexed with another,
+			// and finish a model change that indexing has completed.
+			$this->modelSwitch->check();
 		} catch (EmbedException) {
 			// The crawl only fills the local queue; the worker waits for the service.
 		}

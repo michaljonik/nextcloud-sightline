@@ -53,18 +53,30 @@ class EmbedClient {
 		return $this->request('DELETE', '/files', [])['deleted'];
 	}
 
-	/**
-	 * @param list<int> $storageIds
-	 * @return array{model: string, results: list<array{fileid: int, score: float}>, exhausted: bool, timing_ms: array}
-	 */
-	public function search(string $query, array $storageIds, int $offset, int $limit): array {
-		return $this->request('POST', '/search', [
-			'json' => ['query' => $query, 'storage_ids' => $storageIds, 'offset' => $offset, 'limit' => $limit],
-			'timeout' => self::SEARCH_TIMEOUT,
-		]);
+	/** Drop an earlier model's vectors after a model change. @return int vectors dropped */
+	public function deleteModel(string $model): int {
+		return $this->request('DELETE', '/models/' . rawurlencode($model), [])['deleted'];
 	}
 
-	/** @return array{model: string, dims: int, count: int} */
+	/**
+	 * @param list<int> $storageIds
+	 * @param ?string $model rank this model's vectors; null: the service's current model
+	 * @return array{model: string, results: list<array{fileid: int, score: float}>, exhausted: bool, timing_ms: array}
+	 */
+	public function search(string $query, array $storageIds, int $offset, int $limit, ?string $model = null): array {
+		$body = ['query' => $query, 'storage_ids' => $storageIds, 'offset' => $offset, 'limit' => $limit];
+		if ($model !== null) {
+			$body['model'] = $model;
+		}
+		return $this->request('POST', '/search', ['json' => $body, 'timeout' => self::SEARCH_TIMEOUT]);
+	}
+
+	/**
+	 * models: every model the service holds vectors for; searchable when it can still encode
+	 * queries for it.
+	 *
+	 * @return array{model: string, dims: int, count: int, models: list<array{model: string, dims: int, count: int, searchable: bool}>}
+	 */
 	public function health(): array {
 		return $this->request('GET', '/health', ['timeout' => self::HEALTH_TIMEOUT]);
 	}
@@ -82,8 +94,25 @@ class EmbedClient {
 		if ($model === $this->model()) {
 			return false;
 		}
+		if ($this->searchModel() === '') {
+			// The first model, or an install from before search_model: search what it indexes.
+			$this->setSearchModel($this->model() === '' ? $model : $this->model());
+		}
 		$this->appConfig->setValueString(Application::APP_ID, 'service_model', $model);
 		return true;
+	}
+
+	/**
+	 * The model whose vectors answer queries. After a model change it stays the previous
+	 * model until the current one has every photo (ModelSwitch); empty until the service
+	 * has been reached once.
+	 */
+	public function searchModel(): string {
+		return $this->appConfig->getValueString(Application::APP_ID, 'search_model');
+	}
+
+	public function setSearchModel(string $model): void {
+		$this->appConfig->setValueString(Application::APP_ID, 'search_model', $model);
 	}
 
 	private function request(string $method, string $path, array $options): array {

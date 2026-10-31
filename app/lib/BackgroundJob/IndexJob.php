@@ -10,6 +10,7 @@ namespace OCA\Sightline\BackgroundJob;
 
 use OCA\Sightline\Service\EmbedException;
 use OCA\Sightline\Service\Indexer;
+use OCA\Sightline\Service\ModelSwitch;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
 use OCP\IAppConfig;
@@ -24,6 +25,7 @@ class IndexJob extends TimedJob {
 	public function __construct(
 		ITimeFactory $time,
 		private Indexer $indexer,
+		private ModelSwitch $modelSwitch,
 		private IAppConfig $appConfig,
 		private LoggerInterface $logger,
 	) {
@@ -37,6 +39,8 @@ class IndexJob extends TimedJob {
 	protected function run($argument): void {
 		try {
 			$this->indexer->run(PHP_INT_MAX, Budget::seconds($this->appConfig, self::BUDGET_SECONDS));
+			// After a model change, move search to the new model once it has every photo.
+			$this->modelSwitch->check();
 		} catch (EmbedException $e) {
 			// Unreachable or misconfigured service: the queue waits for the next run.
 			$this->logger->warning('Sightline indexing paused: ' . $e->getMessage(), ['app' => 'sightline']);

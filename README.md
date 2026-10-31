@@ -81,8 +81,12 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
 
 ## Models
 
-The service runs one model at a time, chosen with `SIGHTLINE_MODEL`. Changing it re-encodes
-the library in the background. Both models below accept queries in any language, including
+The service indexes with one model, chosen with `SIGHTLINE_MODEL`. Changing it re-encodes
+the library in the background. Until every photo has a vector from the new model, search
+keeps using the previous one; then it switches and the previous model's vectors are deleted.
+For that the service keeps the previous model's text encoder loaded during the change, which
+needs its files on disk and more memory (2.3 GB for SigLIP 2 B/16 plus the XLM-R B/32 text
+encoder on a MacBook Air M4). Both models below accept queries in any language, including
 Polish:
 
 | Model | Licence | Vector size | Notes |

@@ -46,6 +46,7 @@ class Admin implements ISettings {
 				'scheduled' => $this->l10n->t('Scheduled; the next background job run starts it'),
 				'running' => $this->l10n->t('pending: mount crawls {crawls}, sweeps {sweeps}'),
 				'idle' => $this->l10n->t('idle'),
+				'switching' => $this->l10n->t('{count}; search uses {model} until all are done'),
 			],
 		]);
 	}
