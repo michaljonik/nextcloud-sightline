@@ -155,10 +155,12 @@ On the Intel N305 with 122,972 vectors of 512 dimensions, a search takes 223 ms 
 service (94 ms to encode the query, 126 ms to scan) and about 0.36 s in Nextcloud for 50
 results. The storage filter barely shortens the scan, because sqlite-vec reads the whole
 table ([measurements](measurements/2026-10-28-production-n305.md)). While indexing runs the
-median stays the same but the 95th percentile rises to 1.3 s: together they exceed the
-service container's CPU limit
+median stays the same. The 95th percentile rose to 1.3 s while the image encoder's idle
+threads spun and pushed the service container over its CPU limit
 ([measurements](measurements/2026-10-30-search-while-indexing-n305.md),
-[follow-up](measurements/2026-10-31-cpu-while-indexing-n305.md)).
+[follow-up](measurements/2026-10-31-cpu-while-indexing-n305.md)). With that spinning turned
+off it is 0.35–0.39 s over all storages with a 4-CPU limit, and 0.27 s with 6 CPUs
+([measurements](measurements/2026-10-31-spinning-fix-n305.md)).
 
 ## Limits
 
@@ -177,9 +179,11 @@ service container's CPU limit
 - First indexing is slow where no previews exist yet. One indexing job runs at a time; on an
   Intel N305 with Nextcloud 35 and Imaginary it indexed 7,728 photos in 70 minutes
   (0.54 s per photo), mostly spent generating previews.
-- First indexing loads the server during the day as well: on the N305 Imaginary used about
-  one core and `sightline-embed` about three. While it runs, about a quarter of searches take
-  0.3 to 1.4 s instead of about 0.22 s in the service.
+- First indexing runs during the day as well. On the N305, with previews generated in a
+  Nextcloud cron container limited to 0.4 CPUs, a 240 s run indexes about 80 to 90 photos
+  (about 3 s per photo; the container uses its whole quota), and `sightline-embed` uses about 0.27 CPU seconds
+  per photo. While it runs, about one search in ten takes 0.3 to 0.45 s instead of about
+  0.24 s in the service ([measurements](measurements/2026-10-31-spinning-fix-n305.md)).
 - Changing the model re-encodes every photo. Search stays on the previous model until that
   finishes, so photos added in the meantime are found only after the switch, and the service
   needs memory for a second text encoder (see [Changing the model](#changing-the-model)).
