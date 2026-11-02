@@ -11,8 +11,7 @@ Results appear in a "Photos by content" section of the Nextcloud search:
 
 ![The Nextcloud search panel with the query "dog on a beach" and a "Photos by content" list of matching photos](docs/screenshots/unified-search.png)
 
-Status: early. It runs on Nextcloud 35 on a home server with a family photo library; it is
-not in the Nextcloud app store yet.
+Status: early. It runs on Nextcloud 35 on a home server with a family photo library.
 
 ## How it works
 
@@ -66,13 +65,16 @@ can already open. [docs/architecture.md](docs/architecture.md) explains the desi
    to the internet: embeddings reveal a lot about photos. See
    [embed/README.md](embed/README.md) for the options.
 
-2. Install the app. Download `sightline-0.1.0.tar.gz` from the
-   [releases](https://github.com/michaljonik/nextcloud-sightline/releases), extract it into
-   Nextcloud's `custom_apps/` folder (it holds one folder, `sightline/`), then:
+2. Install the app from Nextcloud's Apps page or with:
 
    ```sh
-   occ app:enable sightline
+   occ app:install sightline
    ```
+
+   To install it by hand, download `sightline-0.1.0.tar.gz` from the
+   [releases](https://github.com/michaljonik/nextcloud-sightline/releases), extract it into
+   Nextcloud's `custom_apps/` folder (it holds one folder, `sightline/`) and run
+   `occ app:enable sightline`.
 
 3. In Administration settings → Sightline, enter the service URL and token. The page shows
    whether the service is reachable and how far indexing has got. The first crawl starts with
@@ -156,8 +158,8 @@ cd embed && uv run pytest
 
 `scripts/package-app.sh` builds the app store archive. Pushing a tag `vX.Y.Z` that matches
 the version in `app/appinfo/info.xml` runs `.github/workflows/release.yml`: it creates a
-GitHub release with the archive and pushes the `sightline-embed` image to
-`ghcr.io/michaljonik/sightline-embed`.
+GitHub release with the archive, uploads it to the Nextcloud app store and pushes the
+`sightline-embed` image to `ghcr.io/michaljonik/sightline-embed`.
 
 ## Licence
 

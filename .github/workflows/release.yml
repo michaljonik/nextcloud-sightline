@@ -43,7 +43,15 @@ jobs:
       - name: GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" "build/sightline-${{ steps.version.outputs.version }}.tar.gz" --notes-file build/notes.md --verify-tag
+        # On a re-run the archive is rebuilt and differs byte for byte, so it replaces the
+        # old one: the app store checks its signature against the file it downloads.
+        run: |
+          archive="build/sightline-${{ steps.version.outputs.version }}.tar.gz"
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$archive" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$archive" --notes-file build/notes.md --verify-tag
+          fi
       - name: Upload to the Nextcloud app store
         env:
           APPSTORE_KEY: ${{ secrets.APPSTORE_KEY }}
@@ -60,7 +68,7 @@ jobs:
           rm "$RUNNER_TEMP/sightline.key"
           jq -n --arg download "$DOWNLOAD" --arg signature "$signature" \
             '{download: $download, signature: $signature, nightly: false}' |
-          curl -sSf -X POST https://apps.nextcloud.com/api/v1/apps/releases \
+          curl -sS --fail-with-body -X POST https://apps.nextcloud.com/api/v1/apps/releases \
             -H "Authorization: Token $APPSTORE_TOKEN" -H "Content-Type: application/json" --data @-
 
   image:
