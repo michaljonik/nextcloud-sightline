@@ -9,7 +9,7 @@ Nextcloud.
 
 Results appear in a "Photos by content" section of the Nextcloud search:
 
-![The Nextcloud search panel with the query "dog on a beach" and a "Photos by content" list of matching photos](docs/screenshots/unified-search.png)
+![The Nextcloud search panel with the query "dog in sunset" and a "Photos by content" list of matching photos](docs/screenshots/unified-search.png)
 
 Status: early. It runs on Nextcloud 35 on a home server with a family photo library.
 
